@@ -1,0 +1,22 @@
+version: '3'
+
+includes:
+  beta-1:
+    taskfile: ./beta-1/Taskfile.yml
+    dir:      ./beta-1
+
+tasks:
+  lint:
+    deps: [
+      beta-1:lint,
+    ]
+
+  test:
+    deps: [
+      beta-1:test,
+    ]
+
+  solve:
+    deps: [
+      beta-1:solve,
+    ]
