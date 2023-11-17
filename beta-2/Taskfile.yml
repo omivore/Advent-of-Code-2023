@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - '$(go env GOPATH)/bin/golangci-lint run'
+  test:
+    cmds:
+      - go test ./...
+  solve:
+    cmds:
+      - 'echo "2022.2.1: $(go run cmd/solve/main.go)"'
+      #- 'echo "2022.1.2: $(cargo run -q -- input 3)"'
