@@ -7,7 +7,7 @@ import (
 
     "flag"
 
-    "github.com/omivore/Advent-of-Code-2023/beta-2/pkg/rps"
+    "github.com/omivore/Advent-of-Code-2023/beta-2/pkg/rps2"
 )
 
 func check(e error) {
@@ -27,10 +27,11 @@ func main() {
     defer file.Close()
 
     scanner := bufio.NewScanner(file)
-    rounds := rps.ParseData(scanner)
+    strats := rps.ParseData(scanner)
 
     sum := 0
-    for _, round := range rounds {
+    for _, strat := range strats {
+        round := strat.Implement()
         sum += round.Points()
     }
     fmt.Printf("Total Points: %d.\n", sum)

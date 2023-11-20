@@ -36,6 +36,33 @@ var referee = map[Choice]map[Choice]Outcome{
     },
 }
 
+var fixer = map[Choice]map[Outcome]Choice{
+    Rock: map[Outcome]Choice{
+        Win: Paper,
+        Lose: Scissors,
+        Tie: Rock,
+    },
+    Paper: map[Outcome]Choice{
+        Win: Scissors,
+        Lose: Rock,
+        Tie: Paper,
+    },
+    Scissors: map[Outcome]Choice{
+        Win: Rock,
+        Lose: Paper,
+        Tie: Scissors,
+    },
+}
+
+type Strategy struct {
+    them   Choice
+    result Outcome
+}
+
+func (s Strategy) Implement() Round {
+    return Round{you: fixer[s.them][s.result], them: s.them}
+}
+
 type Round struct {
     you  Choice
     them Choice
@@ -65,14 +92,15 @@ func (r Round) Points() int {
     return total
 }
 
-func ParseData(scanner *bufio.Scanner) []Round {
-    var rounds []Round
+func ParseData(scanner *bufio.Scanner) []Strategy {
+    var strats []Strategy
     for scanner.Scan() {
         moves := strings.Split(scanner.Text(), " ")
         if len(moves) != 2 {
             panic("Unexpected number of moves in input")
         }
-        var you, them Choice
+        var result Outcome
+        var them Choice
         switch moves[0] {
         case "A":
             them = Rock
@@ -83,14 +111,14 @@ func ParseData(scanner *bufio.Scanner) []Round {
         }
         switch moves[1] {
         case "X":
-            you = Rock
+            result = Lose
         case "Y":
-            you = Paper
+            result = Tie
         case "Z":
-            you = Scissors
+            result = Win
         }
 
-        rounds = append(rounds, Round{you: you, them: them})
+        strats = append(strats, Strategy{result: result, them: them})
     }
-    return rounds
+    return strats
 }

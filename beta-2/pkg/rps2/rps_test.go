@@ -6,6 +6,28 @@ import (
     "testing"
 )
 
+func TestImplement(t *testing.T) {
+    var expected, got Round
+
+    expected = Round{them: Rock, you: Rock}
+    got = Strategy{them: Rock, result: Tie}.Implement()
+    if got != expected {
+        t.Errorf("Expected %#v, got %#v.", expected, got)
+    }
+
+    expected = Round{them: Paper, you: Rock}
+    got = Strategy{them: Paper, result: Lose}.Implement()
+    if got != expected {
+        t.Errorf("Expected %#v, got %#v.", expected, got)
+    }
+
+    expected = Round{them: Scissors, you: Rock}
+    got = Strategy{them: Scissors, result: Win}.Implement()
+    if got != expected {
+        t.Errorf("Expected %#v, got %#v.", expected, got)
+    }
+}
+
 func TestPoints(t *testing.T) {
     var got int
 
@@ -29,10 +51,10 @@ func TestParseData(t *testing.T) {
     input := "A Y\nB X\nC Z\n"
     scanner := bufio.NewScanner(strings.NewReader(input))
     got := ParseData(scanner)
-    expected := []Round{
-        {them: Rock, you: Paper},
-        {them: Paper, you: Rock},
-        {them: Scissors, you: Scissors},
+    expected := []Strategy{
+        {them: Rock, result: Tie},
+        {them: Paper, result: Lose},
+        {them: Scissors, result: Win},
     }
 
     if len(got) != 3 {
