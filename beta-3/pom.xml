@@ -22,7 +22,7 @@
   <dependencies>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
+      <artifactId>junit-jupiter</artifactId>
       <version>5.9.1</version>
       <scope>test</scope>
     </dependency>
@@ -84,7 +84,7 @@
           <configuration>
             <mainClass>${java.main.class}</mainClass>
             <arguments>
-              <argument>5</argument>
+              <argument>input</argument>
             </arguments>
           </configuration>
         </plugin>
