@@ -3,18 +3,38 @@ package adventofcode.beta3;
 import java.lang.IllegalArgumentException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /** Solves the Advent of Code problem.
  */
 public class Solver {
 
-  public static String[] parseData(String input) {
-    int size = input.length() / 2;
-    String first = input.substring(0, size);
-    String second = input.substring(size, input.length());
+  public static List<String[]> parseData(List<String> input) {
+    List<String[]> results = new ArrayList<String[]>();
 
-    return new String[]{first, second};
+    for (final String string : input) {
+      int size = string.length() / 2;
+      String first = string.substring(0, size);
+      String second = string.substring(size, string.length());
+      results.add(new String[]{first, second});
+    }
+
+    return results;
+  }
+
+  public static List<String[]> parseData2(List<String> input) {
+    List<String[]> results = new ArrayList<String[]>();
+
+    for (final String string : input) {
+      int size = string.length() / 2;
+      String first = string.substring(0, size);
+      String second = string.substring(size, string.length());
+      results.add(new String[]{first, second});
+    }
+
+    return results;
   }
 
   public static String findOdd(String first, String second) {

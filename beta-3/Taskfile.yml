@@ -18,4 +18,5 @@ tasks:
   solve:
     deps: [build]
     cmds:
-      - mvn org.codehaus.mojo:exec-maven-plugin:java
+      - 'echo "2022.3.1: $(mvn -q exec:java -Dexec.mainClass=adventofcode.beta3.Main1)"'
+      - 'echo "2022.3.2: $(mvn -q exec:java -Dexec.mainClass=adventofcode.beta3.Main2)"'

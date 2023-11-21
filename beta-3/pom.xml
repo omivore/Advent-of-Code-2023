@@ -16,7 +16,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <java.main.class>adventofcode.beta3.Main</java.main.class>
   </properties>
 
   <dependencies>
@@ -82,7 +81,6 @@
             </execution>
           </executions>
           <configuration>
-            <mainClass>${java.main.class}</mainClass>
             <arguments>
               <argument>input</argument>
             </arguments>

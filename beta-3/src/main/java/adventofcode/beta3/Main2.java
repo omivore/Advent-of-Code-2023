@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Main {
+public class Main2 {
 
   public static void main(String[] args) throws IOException {
     if (args[0] == null || args[0].trim().isEmpty()) {
@@ -18,12 +18,12 @@ public class Main {
 
     Path inPath = Paths.get(args[0]);
     List<String> lines = Files.readAllLines(inPath, StandardCharsets.UTF_8);
-    List<Integer> priorities = lines.stream()
-        .map(Solver::parseData)
-        .map(sacks -> Solver.findOdd(sacks[0], sacks[1]))
-        .map(string -> string.charAt(0))
-        .map(Solver::calculatePriority)
-        .collect(Collectors.toList());
+    List<Integer> priorities = Solver.parseData(lines)
+      .stream()
+      .map(sacks -> Solver.findOdd(sacks[0], sacks[1]))
+      .map(string -> string.charAt(0))
+      .map(Solver::calculatePriority)
+      .collect(Collectors.toList());
 
     int total = priorities.stream().mapToInt(Integer::intValue).sum();
     System.out.println(total);
