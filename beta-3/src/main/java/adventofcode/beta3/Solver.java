@@ -27,22 +27,33 @@ public class Solver {
   public static List<String[]> parseData2(List<String> input) {
     List<String[]> results = new ArrayList<String[]>();
 
+    int i = 0;
+    String[] group = new String[3];
     for (final String string : input) {
-      int size = string.length() / 2;
-      String first = string.substring(0, size);
-      String second = string.substring(size, string.length());
-      results.add(new String[]{first, second});
+      group[i] = string;
+      i += 1;
+      if (i == 3) {
+        results.add(group);
+        group = new String[3];
+        i = 0;
+      }
     }
 
     return results;
   }
 
-  public static String findOdd(String first, String second) {
-    Set<String> firstRucksack = new HashSet<String>(Arrays.asList(first.split("")));
-    Set<String> secondRucksack = new HashSet<String>(Arrays.asList(second.split("")));
+  public static String findOdd(String... sacks) {
+    if (sacks.length < 1) {
+      return "";
+    }
 
-    firstRucksack.retainAll(secondRucksack);
-    return firstRucksack.toArray(new String[0])[0];
+    Set<String> shared = new HashSet<String>(Arrays.asList(sacks[0].split("")));
+    for (int i = 1; i < sacks.length; i++) {
+      Set<String> sack = new HashSet<String>(Arrays.asList(sacks[i].split("")));
+      shared.retainAll(sack);
+    }
+
+    return shared.toArray(new String[0])[0];
   }
 
   public static int calculatePriority(char value) {

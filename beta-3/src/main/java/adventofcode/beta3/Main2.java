@@ -18,9 +18,9 @@ public class Main2 {
 
     Path inPath = Paths.get(args[0]);
     List<String> lines = Files.readAllLines(inPath, StandardCharsets.UTF_8);
-    List<Integer> priorities = Solver.parseData(lines)
+    List<Integer> priorities = Solver.parseData2(lines)
       .stream()
-      .map(sacks -> Solver.findOdd(sacks[0], sacks[1]))
+      .map(sacks -> Solver.findOdd(sacks[0], sacks[1], sacks[2]))
       .map(string -> string.charAt(0))
       .map(Solver::calculatePriority)
       .collect(Collectors.toList());
