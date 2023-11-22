@@ -20,7 +20,7 @@ let full_input = fs.readFileSync(
 );
 let split_input = full_input.split("\n\n");
 
-let stacks, steps, tops
+let stacks, steps, tops;
 // Part 1
 stacks = parseInitialState(split_input[0]);
 steps = parseSteps(split_input[1]);

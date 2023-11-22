@@ -32,10 +32,13 @@ test.each([
     { src: 1, dst: 2, num: 1 },
     [["M"], ["C"], ["P", "Z", "N", "D"]],
   ],
-])("steps execute via 9001", (stacks: Stack[], step: Step, expected: Stack[]) => {
-  executeStep2(stacks, step);
-  expect(stacks).toEqual(expected);
-});
+])(
+  "steps execute via 9001",
+  (stacks: Stack[], step: Step, expected: Stack[]) => {
+    executeStep2(stacks, step);
+    expect(stacks).toEqual(expected);
+  },
+);
 
 test("procedure executes via 9001", () => {
   let stacks = [["Z", "N"], ["M", "C", "D"], ["P"]];
@@ -71,10 +74,13 @@ test.each([
     { src: 1, dst: 2, num: 1 },
     [["C"], ["M"], ["P", "D", "N", "Z"]],
   ],
-])("steps execute via 9000", (stacks: Stack[], step: Step, expected: Stack[]) => {
-  executeStep1(stacks, step);
-  expect(stacks).toEqual(expected);
-});
+])(
+  "steps execute via 9000",
+  (stacks: Stack[], step: Step, expected: Stack[]) => {
+    executeStep1(stacks, step);
+    expect(stacks).toEqual(expected);
+  },
+);
 
 test.each([
   [
