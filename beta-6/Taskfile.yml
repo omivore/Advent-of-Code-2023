@@ -4,6 +4,7 @@ tasks:
   lint:
     cmds:
       - poetry run ruff check solve tests
+      - poetry run mypy .
   style:
     cmds:
       - poetry run ruff format solve tests
