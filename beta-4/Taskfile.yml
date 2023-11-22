@@ -9,4 +9,4 @@ tasks:
       - cabal test
   solve:
     cmds:
-      - cabal run beta4
+      - 'echo -e "2022.4:\n$(cabal run -v0 beta4)"'

@@ -1,29 +1,32 @@
 module Solve where
 
-splitOn :: Char -> String -> [String]
-splitOn split input = [takeWhile isSplit input,
-                       tail (dropWhile isSplit input)]
-                      where isSplit = (/=) split
+import Data.Bifunctor
 
-getBounds :: String -> [Integer]
-getBounds assign = [read (head bounds), read (last bounds)]
-                   where bounds = splitOn '-' assign
+type Section = Integer
+type Bounds = (Section, Section)
 
-expand :: [Integer] -> [Integer]
-expand assign = [(head assign)..(last assign)]
+mapToPair f = bimap f f
 
-disjoint :: [Integer] -> [Integer] -> [[Integer]]
+splitOn :: Char -> String -> (String, String)
+splitOn split input = (takeWhile isSplit input,
+                       tail (dropWhile isSplit input))
+                      where isSplit = (/= split)
+
+getBounds :: String -> Bounds
+getBounds assign = mapToPair read (splitOn '-' assign)
+
+expand :: Bounds -> [Section]
+expand bounds = [(fst bounds)..(snd bounds)]
+
+disjoint :: [Section] -> [Section] -> ([Section], [Section])
 disjoint xs@(x:xs') ys@(y:ys')
-         | x < y  = prependl x (disjoint xs' ys)
+         | x < y  = first (x :) (disjoint xs' ys)
          | x == y = disjoint xs' ys'
-         | x > y  = prependr y (disjoint xs ys')
-         where
-           prependl l assign = [l : head assign, last assign]
-           prependr r assign = [head assign, r : last assign]
-disjoint xs [] = [xs, []]
-disjoint [] ys = [[], ys]
+         | x > y  = second (y :) (disjoint xs ys')
+disjoint xs [] = (xs, [])
+disjoint [] ys = ([], ys)
 
-joint :: [Integer] -> [Integer] -> [Integer]
+joint :: [Section] -> [Section] -> [Section]
 joint xs@(x:xs') ys@(y:ys')
       | x < y  = joint xs' ys
       | x == y = x : joint xs' ys'
@@ -31,9 +34,9 @@ joint xs@(x:xs') ys@(y:ys')
 joint xs [] = []
 joint [] ys = []
 
-overlaps :: [[Integer]] -> Bool
-overlaps assign = not (null (joint (head assign) (last assign)))
+overlaps :: ([Section], [Section]) -> Bool
+overlaps assign = not (null (uncurry joint assign))
 
-fullyContains :: [[Integer]] -> Bool
-fullyContains assign = null (head leftovers) || null (last leftovers)
-                       where leftovers = disjoint (head assign) (last assign)
+fullyContains :: ([Section], [Section]) -> Bool
+fullyContains assign = null (fst leftovers) || null (snd leftovers)
+                       where leftovers = uncurry disjoint assign
