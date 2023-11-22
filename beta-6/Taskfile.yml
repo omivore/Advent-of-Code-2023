@@ -1,0 +1,15 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - poetry run ruff check solve tests
+  style:
+    cmds:
+      - poetry run ruff format solve tests
+  test:
+    cmds:
+      - poetry run pytest
+  solve:
+    cmds:
+      - poetry run python3 solve/solve.py input
