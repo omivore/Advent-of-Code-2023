@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - hlint .
+  test:
+    cmds:
+      - cabal test
+  solve:
+    cmds:
+      - cabal run beta4

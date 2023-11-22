@@ -6,7 +6,7 @@ splitOn split input = [takeWhile isSplit input,
                       where isSplit = (/=) split
 
 getBounds :: String -> [Integer]
-getBounds assign = [read (head $ bounds), read (last $ bounds)]
+getBounds assign = [read (head bounds), read (last bounds)]
                    where bounds = splitOn '-' assign
 
 expand :: [Integer] -> [Integer]
@@ -18,15 +18,15 @@ disjoint xs@(x:xs') ys@(y:ys')
          | x == y = disjoint xs' ys'
          | x > y  = prependr y (disjoint xs ys')
          where
-           prependl l assign = [l:(head assign), last assign]
-           prependr r assign = [head assign, r:(last assign)]
+           prependl l assign = [l : head assign, last assign]
+           prependr r assign = [head assign, r : last assign]
 disjoint xs [] = [xs, []]
 disjoint [] ys = [[], ys]
 
 joint :: [Integer] -> [Integer] -> [Integer]
 joint xs@(x:xs') ys@(y:ys')
       | x < y  = joint xs' ys
-      | x == y = x:(joint xs' ys')
+      | x == y = x : joint xs' ys'
       | x > y  = joint xs ys'
 joint xs [] = []
 joint [] ys = []

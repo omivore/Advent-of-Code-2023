@@ -68,7 +68,7 @@ main = defaultMain $ hUnitTestToTests $ TestList [
         (([6..6], [4..6]), [[], [4..5]]),
         (([2..6], [4..8]), [[2..3], [7..8]])
       ]
-    let actual = disjoint (fst dt) (snd dt)
+    let actual = uncrry disjoint dt
     return $ expected ~=? actual
   ,
   "properly calculate joint items" ~: do
@@ -81,7 +81,7 @@ main = defaultMain $ hUnitTestToTests $ TestList [
         (([6..6], [4..6]), [6]),
         (([2..6], [4..8]), [4..6])
       ]
-    let actual = joint (fst dt) (snd dt)
+    let actual = uncurry joint dt
     return $ expected ~=? actual
   ,
   "determine whether a pair overlaps another" ~: do
