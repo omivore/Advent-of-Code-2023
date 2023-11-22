@@ -1,7 +1,8 @@
 import {
   parseInitialState,
   parseSteps,
-  evaluateProcedure,
+  evaluateProcedure1,
+  evaluateProcedure2,
   readTops,
 } from "./solve";
 import * as fs from "fs";
@@ -19,9 +20,19 @@ let full_input = fs.readFileSync(
 );
 let split_input = full_input.split("\n\n");
 
-let stacks = parseInitialState(split_input[0]);
-let steps = parseSteps(split_input[1]);
+let stacks, steps, tops
+// Part 1
+stacks = parseInitialState(split_input[0]);
+steps = parseSteps(split_input[1]);
 
-evaluateProcedure(stacks, steps);
-let tops = readTops(stacks);
+evaluateProcedure1(stacks, steps);
+tops = readTops(stacks);
+console.log(tops.join(""));
+
+// Part 2
+stacks = parseInitialState(split_input[0]);
+steps = parseSteps(split_input[1]);
+
+evaluateProcedure2(stacks, steps);
+tops = readTops(stacks);
 console.log(tops.join(""));
