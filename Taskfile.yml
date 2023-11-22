@@ -4,19 +4,49 @@ includes:
   beta-1:
     taskfile: ./beta-1/Taskfile.yml
     dir:      ./beta-1
+  beta-2:
+    taskfile: ./beta-2/Taskfile.yml
+    dir:      ./beta-2
+  beta-3:
+    taskfile: ./beta-3/Taskfile.yml
+    dir:      ./beta-3
+  beta-4:
+    taskfile: ./beta-4/Taskfile.yml
+    dir:      ./beta-4
+  beta-5:
+    taskfile: ./beta-5/Taskfile.yml
+    dir:      ./beta-5
+  beta-6:
+    taskfile: ./beta-6/Taskfile.yml
+    dir:      ./beta-6
 
 tasks:
   lint:
     deps: [
       beta-1:lint,
+      beta-2:lint,
+      beta-3:lint,
+      beta-4:lint,
+      beta-5:lint,
+      beta-6:lint,
     ]
 
   test:
     deps: [
       beta-1:test,
+      beta-2:test,
+      beta-3:test,
+      beta-4:test,
+      beta-5:test,
+      beta-6:test,
     ]
 
   solve:
     deps: [
       beta-1:solve,
+      beta-2:solve,
+      beta-3:solve,
+      beta-4:solve,
+      beta-5:solve,
+      beta-6:solve,
     ]

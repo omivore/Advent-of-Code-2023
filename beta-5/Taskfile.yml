@@ -21,4 +21,4 @@ tasks:
   solve:
     deps: [build]
     cmds:
-      - yarn --silent start input
+      - 'echo -e "2022.5:\n$(yarn --silent start input)"'
