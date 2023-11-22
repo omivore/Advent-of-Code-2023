@@ -13,4 +13,5 @@ tasks:
       - poetry run pytest
   solve:
     cmds:
-      - poetry run python3 solve/solve.py input
+      - 'echo "2022.6.1: $(poetry run python3 solve/solve.py input 4)"'
+      - 'echo "2022.6.2: $(poetry run python3 solve/solve.py input 14)"'
