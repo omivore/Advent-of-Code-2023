@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["Jason Tan <j.tan@obscuritylabs.com>"]
 readme = "README.md"
-packages = [{include = "beta_6"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

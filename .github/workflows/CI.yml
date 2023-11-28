@@ -1,0 +1,63 @@
+name: Continuous Integrations
+run-name: ${{ github.actor }} is linting and testing solution code
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.19.x'
+      # There is a golangci-lint Github Action but that actually *runs* the command on a specified repository,
+      # while we want to make golangci-lint available to Go repositories to run lint via task, so we download
+      # it manually into GOPATH/bin
+      - name: Setup Go linting [golangci-lint]
+        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          architecture: x64
+          cache: maven
+      - name: Setup Java linting [checkstyle]
+        run: curl -sSfL https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.5/checkstyle-10.12.5-all.jar > checkstyle-10.12.5-all.jar
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.5
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'poetry'
+      - name: Setup Rust
+        uses: ATiltedTree/setup-rust@v1
+        with:
+          rust-version: stable
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      - name: Setup Node linting [eslint]
+        run: yarn global add eslint
+      - name: Setup Haskell
+        uses: haskell-actions/setup@v2
+        with:
+          ghc-version: '9.4.7'
+      - name: Setup Haskell linting [HLint]
+        uses: haskell-actions/hlint-setup@v2
+      - name: Setup Task
+        uses: arduino/setup-task@v1
+        with:
+          version: 3.x
+
+      - name: Lint All
+        run: task lint
+      - name: Test All
+        run: task test
+      - name: Solve All
+        run: task solve
