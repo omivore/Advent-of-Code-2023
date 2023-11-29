@@ -6,6 +6,7 @@ tasks:
       - yarn lint
   build:
     cmds:
+      - yarn install
       - yarn build
     sources:
       - src/**/*.ts
