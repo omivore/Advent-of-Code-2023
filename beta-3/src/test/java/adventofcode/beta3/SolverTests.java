@@ -1,12 +1,11 @@
 package adventofcode.beta3;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -16,12 +15,12 @@ class SolverTests {
   @Test
   void parsesData() {
     List<String> input = Arrays.asList(
-      "vJrwpWtwJgWrhcsFMMfFFhFp",
-      "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
-      "PmmdzqPrVvPwwTWBwg",
-      "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
-      "ttgJtRGJQctTZtZT",
-      "CrZsJsPPZsGzwwsLwLmpwMDw"
+        "vJrwpWtwJgWrhcsFMMfFFhFp",
+        "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+        "PmmdzqPrVvPwwTWBwg",
+        "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
+        "ttgJtRGJQctTZtZT",
+        "CrZsJsPPZsGzwwsLwLmpwMDw"
     );
 
     List<String[]> expected = Arrays.asList(
@@ -44,12 +43,12 @@ class SolverTests {
   @Test
   void parsesData2() {
     List<String> input = Arrays.asList(
-      "vJrwpWtwJgWrhcsFMMfFFhFp",
-      "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
-      "PmmdzqPrVvPwwTWBwg",
-      "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
-      "ttgJtRGJQctTZtZT",
-      "CrZsJsPPZsGzwwsLwLmpwMDw"
+        "vJrwpWtwJgWrhcsFMMfFFhFp",
+        "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+        "PmmdzqPrVvPwwTWBwg",
+        "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
+        "ttgJtRGJQctTZtZT",
+        "CrZsJsPPZsGzwwsLwLmpwMDw"
     );
 
     List<String[]> expected = Arrays.asList(

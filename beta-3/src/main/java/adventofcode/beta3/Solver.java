@@ -1,9 +1,9 @@
 package adventofcode.beta3;
 
 import java.lang.IllegalArgumentException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +11,8 @@ import java.util.Set;
  */
 public class Solver {
 
+  /** Take in a list of strings to create a list of pairs of rucksacks.
+   */
   public static List<String[]> parseData(List<String> input) {
     List<String[]> results = new ArrayList<String[]>();
 
@@ -24,6 +26,8 @@ public class Solver {
     return results;
   }
 
+  /** Take in a list of string to create a list of groups of rucksacks.
+   */
   public static List<String[]> parseData2(List<String> input) {
     List<String[]> results = new ArrayList<String[]>();
 
@@ -42,6 +46,8 @@ public class Solver {
     return results;
   }
 
+  /** Given a number of String sacks, find the shared attribute amongst them all.
+   */
   public static String findOdd(String... sacks) {
     if (sacks.length < 1) {
       return "";
@@ -56,6 +62,8 @@ public class Solver {
     return shared.toArray(new String[0])[0];
   }
 
+  /** Converts a letter to its priority value.
+   */
   public static int calculatePriority(char value) {
     String map = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     int priority = map.indexOf(value);
