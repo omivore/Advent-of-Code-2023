@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - cargo clippy
+  test:
+    cmds:
+      - cargo test
+  solve:
+    cmds:
+      - 'echo "2023.1.1: $(cargo run -q -- input)"'
+        #- 'echo "2022.1.2: $(cargo run -q -- input 3)"'

@@ -19,6 +19,9 @@ includes:
   beta-6:
     taskfile: ./beta-6/Taskfile.yml
     dir:      ./beta-6
+  1:
+    taskfile: ./1/Taskfile.yml
+    dir:      ./1
 
 tasks:
   lint:
@@ -29,6 +32,7 @@ tasks:
       beta-4:lint,
       beta-5:lint,
       beta-6:lint,
+      1:lint,
     ]
 
   test:
@@ -39,6 +43,7 @@ tasks:
       beta-4:test,
       beta-5:test,
       beta-6:test,
+      1:test,
     ]
 
   solve:
@@ -49,4 +54,5 @@ tasks:
       beta-4:solve,
       beta-5:solve,
       beta-6:solve,
+      1:solve,
     ]
