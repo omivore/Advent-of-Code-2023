@@ -10,4 +10,4 @@ tasks:
   solve:
     cmds:
       - 'echo "2023.1.1: $(cargo run -q -- input)"'
-        #- 'echo "2022.1.2: $(cargo run -q -- input 3)"'
+      - 'echo "2023.1.2: $(cargo run -q -- input --letters)"'
