@@ -1,71 +1,62 @@
 use clap::Parser;
 use std::{error::Error, fs::read_to_string};
 
-fn extract_digits(calibration: String, read_letters: bool) -> Vec<i32> {
-    let mut tokens: Vec<i32> = Vec::new();
-
+fn get_first(calibration: &String, read_letters: bool) -> Option<i32> {
     let mut chars = calibration.as_str();
     while !chars.is_empty() {
-        let next_token: Option<i32> = match chars {
+        match chars {
             num if num.starts_with(|c: char| c.is_ascii_digit()) => {
-                let digit = chars[0..1].parse::<i32>().ok();
+                return chars[0..1].parse::<i32>().ok()
+            }
+            num if read_letters && num.starts_with("one")   => return Some(1),
+            num if read_letters && num.starts_with("two")   => return Some(2),
+            num if read_letters && num.starts_with("three") => return Some(3),
+            num if read_letters && num.starts_with("four")  => return Some(4),
+            num if read_letters && num.starts_with("five")  => return Some(5),
+            num if read_letters && num.starts_with("six")   => return Some(6),
+            num if read_letters && num.starts_with("seven") => return Some(7),
+            num if read_letters && num.starts_with("eight") => return Some(8),
+            num if read_letters && num.starts_with("nine")  => return Some(9),
+            _ => {
                 chars = &chars[1..];
-                digit
+                continue
             }
-            num if read_letters && num.starts_with("one")   => {
-                chars = &chars[3..];
-                Some(1)
-            }
-            num if read_letters && num.starts_with("two")   => {
-                chars = &chars[3..];
-                Some(2)
-            }
-            num if read_letters && num.starts_with("three") => {
-                chars = &chars[5..];
-                Some(3)
-            }
-            num if read_letters && num.starts_with("four")  => {
-                chars = &chars[4..];
-                Some(4)
-            }
-            num if read_letters && num.starts_with("five")  => {
-                chars = &chars[4..];
-                Some(5)
-            }
-            num if read_letters && num.starts_with("six")   => {
-                chars = &chars[3..];
-                Some(6)
-            }
-            num if read_letters && num.starts_with("seven") => {
-                chars = &chars[5..];
-                Some(7)
-            }
-            num if read_letters && num.starts_with("eight") => {
-                chars = &chars[5..];
-                Some(8)
-            }
-            num if read_letters && num.starts_with("nine")  => {
-                chars = &chars[4..];
-                Some(9)
-            }
-            _   => {
-                chars = &chars[1..];
-                None
-            }
-        };
-        match next_token {
-            Some(token) => tokens.push(token),
-            None        => (),
         };
     }
+    None
+}
 
-    tokens
+fn get_last(calibration: &String, read_letters: bool) -> Option<i32> {
+    let mut chars = calibration.as_str();
+    while !chars.is_empty() {
+        let i = chars.len();
+        match chars {
+            num if num.ends_with(|c: char| c.is_ascii_digit()) => {
+                return chars[i-1..].parse::<i32>().ok()
+            }
+            num if read_letters && num.ends_with("one")   => return Some(1),
+            num if read_letters && num.ends_with("two")   => return Some(2),
+            num if read_letters && num.ends_with("three") => return Some(3),
+            num if read_letters && num.ends_with("four")  => return Some(4),
+            num if read_letters && num.ends_with("five")  => return Some(5),
+            num if read_letters && num.ends_with("six")   => return Some(6),
+            num if read_letters && num.ends_with("seven") => return Some(7),
+            num if read_letters && num.ends_with("eight") => return Some(8),
+            num if read_letters && num.ends_with("nine")  => return Some(9),
+            _ => {
+                chars = &chars[..i-1];
+                continue
+            }
+        };
+    }
+    None
 }
 
 fn answer(input: String, read_letters: bool) -> i32 {
-    let digits = extract_digits(input, read_letters);
-    match (digits.first(), digits.last()) {
-        (Some(x), Some(y)) => {println!("{}", x * 10 + y); x * 10 + y},
+    let first = get_first(&input, read_letters);
+    let last = get_last(&input, read_letters);
+    match (first, last) {
+        (Some(x), Some(y)) => x * 10 + y,
         _ => panic!("Could not retrieve desired digits.")
     }
 }
@@ -99,18 +90,32 @@ mod tests {
 
     #[test]
     fn digits() {
-        assert_eq!(extract_digits("1abc2".to_string(), false), vec![1, 2]);
-        assert_eq!(extract_digits("pqr3stu8vwx".to_string(), false), vec![3, 8]);
-        assert_eq!(extract_digits("a1b2c3d4e5f".to_string(), false), vec![1, 2, 3, 4, 5]);
-        assert_eq!(extract_digits("treb7uchet".to_string(), false), vec![7]);
+        assert_eq!(get_first(&"1abc2".to_string(), false), Some(1));
+        assert_eq!(get_first(&"pqr3stu8vwx".to_string(), false), Some(3));
+        assert_eq!(get_first(&"a1b2c3d4e5f".to_string(), false), Some(1));
+        assert_eq!(get_first(&"treb7uchet".to_string(), false), Some(7));
 
-        assert_eq!(extract_digits("two1nine".to_string(), true), vec![2, 1, 9]);
-        assert_eq!(extract_digits("eighttwothree".to_string(), true), vec![8, 2, 3]);
-        assert_eq!(extract_digits("abcone2threexyz".to_string(), true), vec![1, 2, 3]);
-        assert_eq!(extract_digits("xtwone3four".to_string(), true), vec![2, 3, 4]);
-        assert_eq!(extract_digits("4nineeightseven2".to_string(), true), vec![4, 9, 8, 7, 2]);
-        assert_eq!(extract_digits("zoneight234".to_string(), true), vec![1, 2, 3, 4]);
-        assert_eq!(extract_digits("7pqrstsixteen".to_string(), true), vec![7, 6]);
+        assert_eq!(get_last(&"1abc2".to_string(), false), Some(2));
+        assert_eq!(get_last(&"pqr3stu8vwx".to_string(), false), Some(8));
+        assert_eq!(get_last(&"a1b2c3d4e5f".to_string(), false), Some(5));
+        assert_eq!(get_last(&"treb7uchet".to_string(), false), Some(7));
+
+
+        assert_eq!(get_first(&"two1nine".to_string(), true), Some(2));
+        assert_eq!(get_first(&"eighttwothree".to_string(), true), Some(8));
+        assert_eq!(get_first(&"abcone2threexyz".to_string(), true), Some(1));
+        assert_eq!(get_first(&"xtwone3four".to_string(), true), Some(2));
+        assert_eq!(get_first(&"4nineeightseven2".to_string(), true), Some(4));
+        assert_eq!(get_first(&"zoneight234".to_string(), true), Some(1));
+        assert_eq!(get_first(&"7pqrstsixteen".to_string(), true), Some(7));
+
+        assert_eq!(get_last(&"two1nine".to_string(), true), Some(9));
+        assert_eq!(get_last(&"eighttwothree".to_string(), true), Some(3));
+        assert_eq!(get_last(&"abcone2threexyz".to_string(), true), Some(3));
+        assert_eq!(get_last(&"xtwone3four".to_string(), true), Some(4));
+        assert_eq!(get_last(&"4nineeightseven2".to_string(), true), Some(2));
+        assert_eq!(get_last(&"zoneight234".to_string(), true), Some(4));
+        assert_eq!(get_last(&"7pqrstsixteen".to_string(), true), Some(6));
     }
 
     #[test]
