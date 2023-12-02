@@ -1,8 +1,9 @@
 use clap::Parser;
+use regex::Regex;
 use std::{collections::HashMap, error::Error, fs::read_to_string};
 
 type Cubes = HashMap<String, u8>;
-type GameId = u8;
+type GameId = u16;
 #[derive(Debug, PartialEq)]
 struct Game {
     id: GameId,
@@ -10,9 +11,28 @@ struct Game {
 }
 
 fn parse_game(game_data: &str) -> Game {
+    const ERR_MSG: &str = "Game Data did not match expected pattern";
+    let game_re = Regex::new(r"^Game (\d+): (.+)$").expect("Game Regex could not compile");
+    let cube_re = Regex::new(r"(\d+) ([a-zA-Z]+)").expect("Cube Regex could not compile");
+
+    let game_caps = game_re.captures(game_data).expect(ERR_MSG);
+
+    let id = game_caps.get(1).expect(ERR_MSG).as_str().parse::<GameId>().expect("Could not parse game ID");
+    let mut reveals = vec![];
+
+    for reveal_text in game_caps.get(2).expect(ERR_MSG).as_str().split(';') {
+        let mut reveal = Cubes::new();
+        for cube_text in reveal_text.split(',') {
+            let cube_caps = cube_re.captures(cube_text).expect(ERR_MSG);
+            let count = cube_caps.get(1).expect(ERR_MSG).as_str().parse::<u8>().expect("Could not parse number of cubes");
+            let color = cube_caps.get(2).expect(ERR_MSG).as_str();
+            reveal.insert(color.to_string(), count);
+        }
+        reveals.push(reveal);
+    }
     Game {
-        id: 1,
-        reveals: vec![Cubes::from([("red".to_string(), 5)])],
+        id,
+        reveals,
     }
 }
 
@@ -34,7 +54,7 @@ fn answer(input: &str, bag: &Cubes) -> Option<GameId> {
     game.is_possible_with(bag).then(|| game.id)
 }
 
-fn aggregate<'a, I>(contents: I, bag: &Cubes) -> u8
+fn aggregate<'a, I>(contents: I, bag: &Cubes) -> GameId
 where
     I: Iterator<Item = &'a str>
 {
@@ -70,7 +90,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parse() {
+    fn test_parse_game() {
         assert_eq!(
             parse_game("Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"),
             Game {
