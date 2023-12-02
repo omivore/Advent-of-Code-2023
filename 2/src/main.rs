@@ -18,7 +18,14 @@ fn parse_game(game_data: &str) -> Game {
 
 impl Game {
     fn is_possible_with(&self, bag: &Cubes) -> bool {
-        false
+        for reveal in &self.reveals {
+            for (color, count) in reveal.iter() {
+                if !bag.get(color).is_some_and(|held| held >= count) {
+                    return false
+                }
+            }
+        }
+        true
     }
 }
 
@@ -121,7 +128,7 @@ mod tests {
     }
 
     #[test]
-    fn sample() {
+    fn test_game_is_possible_with() {
         let bag = Cubes::from([("red".to_string(), 12), ("green".to_string(), 13), ("blue".to_string(), 14)]);
         assert_eq!(
             Game {
