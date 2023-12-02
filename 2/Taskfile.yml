@@ -9,5 +9,4 @@ tasks:
       - cargo test
   solve:
     cmds:
-      - 'echo "2023.2.1: $(cargo run -q -- input --red 12 --green 13 --blue 14)"'
-      #- 'echo "2023.2.2: $(cargo run -q -- input)"'
+      - 'echo -e "2023.2:\n$(cargo run -q -- input --red 12 --green 13 --blue 14)"'

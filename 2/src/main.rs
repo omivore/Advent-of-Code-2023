@@ -1,9 +1,9 @@
 use clap::Parser;
 use regex::Regex;
-use std::{collections::HashMap, error::Error, fs::read_to_string};
+use std::{cmp::max, collections::HashMap, error::Error, fs::read_to_string};
 
-type Cubes = HashMap<String, u16>;
-type GameId = u16;
+type Cubes = HashMap<String, u32>;
+type GameId = u32;
 #[derive(Debug, PartialEq)]
 struct Game {
     id: GameId,
@@ -24,7 +24,7 @@ fn parse_game(game_data: &str) -> Game {
         let mut reveal = Cubes::new();
         for cube_text in reveal_text.split(',') {
             let cube_caps = cube_re.captures(cube_text).expect(ERR_MSG);
-            let count = cube_caps.get(1).expect(ERR_MSG).as_str().parse::<u16>().expect("Could not parse number of cubes");
+            let count = cube_caps.get(1).expect(ERR_MSG).as_str().parse::<u32>().expect("Could not parse number of cubes");
             let color = cube_caps.get(2).expect(ERR_MSG).as_str();
             reveal.insert(color.to_string(), count);
         }
@@ -49,11 +49,20 @@ impl Game {
     }
 
     fn get_minimum_set(&self) -> Cubes {
-        Cubes::from([("red".to_string(), 12), ("green".to_string(), 13), ("blue".to_string(), 14)])
+        let mut min_set = Cubes::new();
+        for reveal in &self.reveals {
+            for (color, count) in reveal.iter() {
+                min_set.insert(
+                    color.to_string(),
+                    min_set.get(color).map(|current_min| max(*current_min, *count)).unwrap_or(*count)
+                );
+            }
+        }
+        min_set
     }
 }
 
-fn power_of(bag: &Cubes) -> u16 {
+fn power_of(bag: &Cubes) -> u32 {
     bag.values().product()
 }
 
@@ -69,7 +78,7 @@ where
     contents.map(|line| answer1(line, bag).unwrap_or(0)).sum()
 }
 
-fn answer2(input: &str) -> u16 {
+fn answer2(input: &str) -> u32 {
     let game = parse_game(input);
     power_of(&game.get_minimum_set())
 }
@@ -85,11 +94,11 @@ where
 struct Cli {
     file: std::path::PathBuf,
     #[arg(short, long)]
-    red: u16,
+    red: u32,
     #[arg(short, long)]
-    green: u16,
+    green: u32,
     #[arg(short, long)]
-    blue: u16,
+    blue: u32,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
