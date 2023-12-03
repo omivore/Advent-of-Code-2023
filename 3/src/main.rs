@@ -62,8 +62,11 @@ fn get_symbols(all: &Vec<Artifact>) -> Vec<&Artifact> {
     all.into_iter().filter(|art| matches!(art.content, Content::Symbol(_))).collect()
 }
 
-fn get_parts_adjacent_to<'a>(all: &'a Vec<Artifact>, pos: &'a Position) -> &'a Vec<Artifact> {
-    all
+fn get_gears(all: &Vec<Artifact>) -> Vec<&Artifact> {
+    all.into_iter()
+        .filter(|art| matches!(art.content, Content::Symbol('*')))
+        .filter(|art| get_parts_adjacent_to(all, &art.position).len() == 2)
+        .collect()
 }
 
 fn get_parts_adjacent_to<'a>(all: &'a Vec<Artifact>, pos: &'a Position) -> Vec<&'a Artifact> {
@@ -78,7 +81,7 @@ fn get_parts_adjacent_to<'a>(all: &'a Vec<Artifact>, pos: &'a Position) -> Vec<&
         .collect()
 }
 
-fn aggregate<'a, I>(contents: I) -> u32
+fn aggregate1<'a, I>(contents: I) -> i32
 where
     I: Iterator<Item = &'a str>
 {
@@ -97,6 +100,23 @@ where
     sum
 }
 
+fn aggregate2<'a, I>(contents: I) -> i32
+where
+    I: Iterator<Item = &'a str>
+{
+    let all = contents.enumerate().map(|(i, line)| parse_row(i.try_into().unwrap(), line)).flatten().collect();
+    let mut sum = 0;
+    for symbol in get_gears(&all) {
+        sum += get_parts_adjacent_to(&all, &symbol.position)
+            .into_iter()
+            .map(|art| match art.content { Content::Number(num) => Some(num), _ => None})
+            .flatten()
+            .product::<i32>();
+    }
+
+    sum
+}
+
 #[derive(Debug, Parser)]
 struct Cli {
     file: std::path::PathBuf,
@@ -105,8 +125,10 @@ struct Cli {
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
     let content = read_to_string(&args.file).unwrap();
-    let result = aggregate(content.lines());
-    println!("{:?}", result);
+    let result1 = aggregate1(content.lines());
+    println!("{:?}", result1);
+    let result2 = aggregate2(content.lines());
+    println!("{:?}", result2);
     Ok(())
 }
 
@@ -313,7 +335,84 @@ mod tests {
                 position: Position { row: 7, columns: vec![5] },
             },
         ];
-        assert_eq!(get_symbols(&all), &symbols);
+        assert_eq!(get_symbols(&all), symbols.iter().collect::<Vec<_>>());
+    }
+
+    #[test]
+    fn test_get_gears() {
+        let all = vec![
+            Artifact {
+                content: Content::Number(467),
+                position: Position { row: 0, columns: vec![0, 1, 2] },
+            },
+            Artifact {
+                content: Content::Number(114),
+                position: Position { row: 0, columns: vec![5, 6, 7] },
+            },
+            Artifact {
+                content: Content::Symbol('*'),
+                position: Position { row: 1, columns: vec![3] },
+            },
+            Artifact {
+                content: Content::Number(35),
+                position: Position { row: 2, columns: vec![2, 3] },
+            },
+            Artifact {
+                content: Content::Number(633),
+                position: Position { row: 2, columns: vec![6, 7, 8] },
+            },
+            Artifact {
+                content: Content::Symbol('#'),
+                position: Position { row: 3, columns: vec![6] },
+            },
+            Artifact {
+                content: Content::Number(617),
+                position: Position { row: 4, columns: vec![0, 1, 2] },
+            },
+            Artifact {
+                content: Content::Symbol('*'),
+                position: Position { row: 4, columns: vec![3] },
+            },
+            Artifact {
+                content: Content::Symbol('+'),
+                position: Position { row: 5, columns: vec![5] },
+            },
+            Artifact {
+                content: Content::Number(58),
+                position: Position { row: 5, columns: vec![7, 8] },
+            },
+            Artifact {
+                content: Content::Number(592),
+                position: Position { row: 6, columns: vec![2, 3, 4] },
+            },
+            Artifact {
+                content: Content::Symbol('$'),
+                position: Position { row: 7, columns: vec![3] },
+            },
+            Artifact {
+                content: Content::Symbol('*'),
+                position: Position { row: 7, columns: vec![5] },
+            },
+            Artifact {
+                content: Content::Number(664),
+                position: Position { row: 8, columns: vec![1, 2, 3] },
+            },
+            Artifact {
+                content: Content::Number(598),
+                position: Position { row: 8, columns: vec![5, 6, 7] },
+            },
+        ];
+        let symbols = vec![
+            Artifact {
+                content: Content::Symbol('*'),
+                position: Position { row: 1, columns: vec![3] },
+            },
+            Artifact {
+                content: Content::Symbol('*'),
+                position: Position { row: 7, columns: vec![5] },
+            },
+        ];
+        assert_eq!(get_gears(&all), symbols.iter().collect::<Vec<_>>());
     }
 
     #[test]
@@ -449,7 +548,7 @@ mod tests {
     }
 
     #[test]
-    fn test_aggregate() {
+    fn test_aggregate1() {
         let input = vec![
             "467..114..",
             "...*......",
@@ -462,6 +561,23 @@ mod tests {
             "...$.*....",
             ".664.598..",
         ];
-        assert_eq!(aggregate(input.into_iter()), 4361);
+        assert_eq!(aggregate1(input.into_iter()), 4361);
+    }
+
+    #[test]
+    fn test_aggregate2() {
+        let input = vec![
+            "467..114..",
+            "...*......",
+            "..35..633.",
+            "......#...",
+            "617*......",
+            ".....+.58.",
+            "..592.....",
+            "......755.",
+            "...$.*....",
+            ".664.598..",
+        ];
+        assert_eq!(aggregate2(input.into_iter()), 467835);
     }
 }
