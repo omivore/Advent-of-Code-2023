@@ -59,11 +59,11 @@ fn parse_row(row_number: i32, row_data: &str) -> Vec<Artifact> {
 }
 
 fn get_symbols(all: &Vec<Artifact>) -> Vec<&Artifact> {
-    all.into_iter().filter(|art| matches!(art.content, Content::Symbol(_))).collect()
+    all.iter().filter(|art| matches!(art.content, Content::Symbol(_))).collect()
 }
 
 fn get_gears(all: &Vec<Artifact>) -> Vec<&Artifact> {
-    all.into_iter()
+    all.iter()
         .filter(|art| matches!(art.content, Content::Symbol('*')))
         .filter(|art| get_parts_adjacent_to(all, &art.position).len() == 2)
         .collect()
@@ -72,7 +72,7 @@ fn get_gears(all: &Vec<Artifact>) -> Vec<&Artifact> {
 fn get_parts_adjacent_to<'a>(all: &'a Vec<Artifact>, pos: &'a Position) -> Vec<&'a Artifact> {
     let adjacent_left: i32 = pos.columns.iter().min().unwrap() - 1;
     let adjacent_right: i32 = pos.columns.iter().max().unwrap() + 1;
-    all.into_iter()
+    all.iter()
         .filter(|art| matches!(art.content, Content::Number(_)))
         .filter(|art| (art.position.row - pos.row).abs() <= 1)
         .filter(|art| art.position.columns.iter().min().unwrap() <= &adjacent_right &&
@@ -85,7 +85,7 @@ fn aggregate1<'a, I>(contents: I) -> i32
 where
     I: Iterator<Item = &'a str>
 {
-    let all = contents.enumerate().map(|(i, line)| parse_row(i.try_into().unwrap(), line)).flatten().collect();
+    let all = contents.enumerate().flat_map(|(i, line)| parse_row(i.try_into().unwrap(), line)).collect();
     let mut parts: Vec<&Artifact> = vec![];
     for symbol in get_symbols(&all) {
         parts.extend_from_slice(&get_parts_adjacent_to(&all, &symbol.position));
@@ -104,13 +104,12 @@ fn aggregate2<'a, I>(contents: I) -> i32
 where
     I: Iterator<Item = &'a str>
 {
-    let all = contents.enumerate().map(|(i, line)| parse_row(i.try_into().unwrap(), line)).flatten().collect();
+    let all = contents.enumerate().flat_map(|(i, line)| parse_row(i.try_into().unwrap(), line)).collect();
     let mut sum = 0;
     for symbol in get_gears(&all) {
         sum += get_parts_adjacent_to(&all, &symbol.position)
             .into_iter()
-            .map(|art| match art.content { Content::Number(num) => Some(num), _ => None})
-            .flatten()
+            .filter_map(|art| match art.content { Content::Number(num) => Some(num), _ => None})
             .product::<i32>();
     }
 
@@ -124,7 +123,7 @@ struct Cli {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
-    let content = read_to_string(&args.file).unwrap();
+    let content = read_to_string(args.file).unwrap();
     let result1 = aggregate1(content.lines());
     println!("{:?}", result1);
     let result2 = aggregate2(content.lines());
