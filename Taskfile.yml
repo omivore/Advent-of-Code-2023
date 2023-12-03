@@ -22,6 +22,12 @@ includes:
   1:
     taskfile: ./1/Taskfile.yml
     dir:      ./1
+  2:
+    taskfile: ./2/Taskfile.yml
+    dir:      ./2
+  3:
+    taskfile: ./3/Taskfile.yml
+    dir:      ./3
 
 tasks:
   lint:
@@ -33,6 +39,8 @@ tasks:
       beta-5:lint,
       beta-6:lint,
       1:lint,
+      2:lint,
+      3:lint,
     ]
 
   test:
@@ -44,6 +52,8 @@ tasks:
       beta-5:test,
       beta-6:test,
       1:test,
+      2:test,
+      3:test,
     ]
 
   solve:
@@ -55,4 +65,6 @@ tasks:
       beta-5:solve,
       beta-6:solve,
       1:solve,
+      2:solve,
+      3:solve,
     ]
