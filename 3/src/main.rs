@@ -1,15 +1,15 @@
 use clap::Parser;
-use std::{error::Error, fs::read_to_string};
+use std::{error::Error, fs::read_to_string, iter::from_fn, iter::once};
 
 #[derive(Clone, Debug, PartialEq)]
 enum Content {
     Symbol(char),
-    Number(u32),
+    Number(i32),
 }
 #[derive(Clone, Debug, PartialEq)]
 struct Position {
-    row: u32,
-    columns: Vec<u32>,
+    row: i32,
+    columns: Vec<i32>,
 }
 #[derive(Clone, Debug, PartialEq)]
 struct Artifact {
@@ -17,16 +17,65 @@ struct Artifact {
     position: Position,
 }
 
-fn parse_row(row_number: u32, row_data: &str) -> Vec<Artifact> {
-    vec![]
+fn parse_row(row_number: i32, row_data: &str) -> Vec<Artifact> {
+    let mut iter = row_data.chars().enumerate().peekable();
+    let mut artifacts = Vec::<Artifact>::new();
+    while let Some((i, ch)) = iter.next() {
+        let col = i.try_into().unwrap();
+        match ch {
+            '.' => continue,
+            '0'..='9' => {
+                let digit_text = once(ch)
+                    .chain(from_fn(|| iter.by_ref().next_if(|(_, s)| s.is_ascii_digit()).map(|(_, s)| s)))
+                    .collect::<String>();
+                let n = digit_text
+                    .parse()
+                    .unwrap();
+                artifacts.push(
+                    Artifact {
+                        content: Content::Number(n),
+                        position: Position {
+                            row: row_number,
+                            columns: (col..col + digit_text.chars().count() as i32).collect(),
+                        }
+                    }
+                );
+            },
+            _ => {
+                artifacts.push(
+                    Artifact {
+                        content: Content::Symbol(ch),
+                        position: Position {
+                            row: row_number,
+                            columns: vec![col],
+                        }
+                    }
+                );
+            }
+        }
+    }
+
+    artifacts
 }
 
-fn get_symbols(all: &Vec<Artifact>) -> &Vec<Artifact> {
-    all
+fn get_symbols(all: &Vec<Artifact>) -> Vec<&Artifact> {
+    all.into_iter().filter(|art| matches!(art.content, Content::Symbol(_))).collect()
 }
 
 fn get_parts_adjacent_to<'a>(all: &'a Vec<Artifact>, pos: &'a Position) -> &'a Vec<Artifact> {
     all
+}
+
+fn get_parts_adjacent_to<'a>(all: &'a Vec<Artifact>, pos: &'a Position) -> Vec<&'a Artifact> {
+    let adjacent_left: i32 = pos.columns.iter().min().unwrap() - 1;
+    let adjacent_right: i32 = pos.columns.iter().max().unwrap() + 1;
+    all.into_iter()
+        .filter(|art| matches!(art.content, Content::Number(_)))
+        .filter(|art| (art.position.row - pos.row).abs() <= 1)
+        .filter(|art| art.position.columns.iter().min().unwrap() <= &adjacent_right &&
+                      art.position.columns.iter().max().unwrap() >= &adjacent_left
+        )
+        .collect()
 }
 
 fn aggregate<'a, I>(contents: I) -> u32
@@ -34,9 +83,9 @@ where
     I: Iterator<Item = &'a str>
 {
     let all = contents.enumerate().map(|(i, line)| parse_row(i.try_into().unwrap(), line)).flatten().collect();
-    let mut parts: Vec<Artifact> = vec![];
+    let mut parts: Vec<&Artifact> = vec![];
     for symbol in get_symbols(&all) {
-        parts.extend_from_slice(get_parts_adjacent_to(&all, &symbol.position));
+        parts.extend_from_slice(&get_parts_adjacent_to(&all, &symbol.position));
     }
 
     let mut sum = 0;
@@ -333,7 +382,7 @@ mod tests {
         ];
         assert_eq!(
             get_parts_adjacent_to(&all, &Position { row: 1, columns: vec![3] }),
-            &vec![
+            vec![
                 Artifact {
                     content: Content::Number(467),
                     position: Position { row: 0, columns: vec![0, 1, 2] },
@@ -342,38 +391,38 @@ mod tests {
                     content: Content::Number(35),
                     position: Position { row: 2, columns: vec![2, 3] },
                 },
-            ]
+            ].iter().collect::<Vec<_>>()
         );
         assert_eq!(
             get_parts_adjacent_to(&all, &Position { row: 3, columns: vec![6] }),
-            &vec![
+            vec![
                 Artifact {
                     content: Content::Number(633),
                     position: Position { row: 2, columns: vec![6, 7, 8] },
                 },
-            ]
+            ].iter().collect::<Vec<_>>()
         );
         assert_eq!(
             get_parts_adjacent_to(&all, &Position { row: 4, columns: vec![3] }),
-            &vec![
+            vec![
                 Artifact {
                     content: Content::Number(617),
                     position: Position { row: 4, columns: vec![0, 1, 2] },
                 },
-            ]
+            ].iter().collect::<Vec<_>>()
         );
         assert_eq!(
             get_parts_adjacent_to(&all, &Position { row: 5, columns: vec![5] }),
-            &vec![
+            vec![
                 Artifact {
                     content: Content::Number(592),
                     position: Position { row: 6, columns: vec![2, 3, 4] },
                 },
-            ]
+            ].iter().collect::<Vec<_>>()
         );
         assert_eq!(
             get_parts_adjacent_to(&all, &Position { row: 7, columns: vec![3] }),
-            &vec![
+            vec![
                 Artifact {
                     content: Content::Number(592),
                     position: Position { row: 6, columns: vec![2, 3, 4] },
@@ -382,11 +431,11 @@ mod tests {
                     content: Content::Number(664),
                     position: Position { row: 8, columns: vec![1, 2, 3] },
                 },
-            ]
+            ].iter().collect::<Vec<_>>()
         );
         assert_eq!(
             get_parts_adjacent_to(&all, &Position { row: 7, columns: vec![5] }),
-            &vec![
+            vec![
                 Artifact {
                     content: Content::Number(592),
                     position: Position { row: 6, columns: vec![2, 3, 4] },
@@ -395,7 +444,7 @@ mod tests {
                     content: Content::Number(598),
                     position: Position { row: 8, columns: vec![5, 6, 7] },
                 },
-            ]
+            ].iter().collect::<Vec<_>>()
         );
     }
 
