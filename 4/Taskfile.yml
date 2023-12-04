@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - cargo clippy
+  test:
+    cmds:
+      - cargo test
+  solve:
+    cmds:
+      - 'echo -e "2023.4:\n$(cargo run -q -- input)"'
