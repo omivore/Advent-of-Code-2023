@@ -9,4 +9,5 @@ tasks:
       - cargo test
   solve:
     cmds:
-      - 'echo -e "2023.4:\n$(cargo run -q -- input)"'
+      - 'echo "2023.4.1: $(cargo run -q -- input)"'
+      - 'echo "2023.4.2: $(cargo run -q -- --ranges input)"'
