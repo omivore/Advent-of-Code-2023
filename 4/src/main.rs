@@ -34,7 +34,7 @@ fn parse_row(row_data: &str) -> Card {
 }
 
 impl Card {
-    fn get_overlap<'a>(&'a self) -> Vec<&'a u32> {
+    fn get_overlap(&self) -> Vec<&u32> {
         self.winners.iter().filter(|num| self.revealed.contains(num)).collect()
     }
 
@@ -64,7 +64,7 @@ fn aggregate1<'a, I>(contents: I) -> u32
 where
     I: Iterator<Item = &'a str>
 {
-    contents.map(|line| answer1(line)).sum()
+    contents.map(answer1).sum()
 }
 
 fn aggregate2<'a, I>(contents: I) -> u32
@@ -73,7 +73,7 @@ where
 {
     let generated = HashMap::<usize, Vec<usize>>::from_iter(
         contents
-            .map(|line| parse_row(line))
+            .map(parse_row)
             .map(|card| (card.id, card.get_won_cards()))
     );
 

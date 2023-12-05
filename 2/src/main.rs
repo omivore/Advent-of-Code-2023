@@ -68,7 +68,7 @@ fn power_of(bag: &Cubes) -> u32 {
 
 fn answer1(input: &str, bag: &Cubes) -> Option<GameId> {
     let game = parse_game(input);
-    game.is_possible_with(bag).then(|| game.id)
+    game.is_possible_with(bag).then_some(game.id)
 }
 
 fn aggregate1<'a, I>(contents: I, bag: &Cubes) -> GameId
@@ -87,7 +87,7 @@ fn aggregate2<'a, I>(contents: I) -> GameId
 where
     I: Iterator<Item = &'a str>
 {
-    contents.map(|line| answer2(line)).sum()
+    contents.map(answer2).sum()
 }
 
 #[derive(Debug, Parser)]
