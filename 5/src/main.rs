@@ -1,6 +1,6 @@
 use clap::Parser;
 use regex::Regex;
-use std::{collections::HashMap, collections::VecDeque, error::Error, fs::read_to_string};
+use std::{error::Error, fs::read_to_string};
 
 #[derive(Clone, Debug, PartialEq)]
 struct Mapping {
@@ -17,29 +17,93 @@ struct Map {
 }
 
 fn parse_data(all_data: &str) -> (Vec<usize>, Vec<Map>) {
-    (
-        vec![1],
-        vec![Map {
-            from: String::from("this"),
-            to: String::from("that"),
-            mappings: vec![Mapping { src: 1, dst: 10, len: 2 }],
-        }]
-    )
+    const ERR_MSG: &str = "Data did not match expected pattern";
+    let seeds_re = Regex::new(r"^seeds: ([\d ]+)$").expect("Seed Regex could not compile");
+    let map_re = Regex::new(r"^(\w+)-to-(\w+) map:$").expect("Map Regex could not compile");
+    let mapping_re = Regex::new(r"^(\d+) (\d+) (\d+)$").expect("Mapping Regex could not compile");
+
+    let mut iter = all_data.split("\n\n");
+    let seeds_data = iter.next().expect("Did not find seed line");
+    let seeds_caps = seeds_re.captures(seeds_data).expect(ERR_MSG);
+    let seeds = seeds_caps
+        .get(1)
+        .expect(ERR_MSG)
+        .as_str()
+        .split(' ')
+        .map(|num| num.parse::<usize>().expect("Could not parse seed number"))
+        .collect();
+
+    let mut maps = Vec::<Map>::new();
+    for data in iter {
+        let mut map_iter = data.lines();
+        let map_data = map_iter.next().expect("Did not find map line");
+        let map_caps = map_re.captures(map_data).expect(ERR_MSG);
+
+        let from = map_caps
+            .get(1)
+            .expect(ERR_MSG)
+            .as_str()
+            .to_string();
+        let to = map_caps
+            .get(2)
+            .expect(ERR_MSG)
+            .as_str()
+            .to_string();
+
+        let mut mappings = Vec::<Mapping>::new();
+        for mapping_data in map_iter {
+            let mapping_caps = mapping_re.captures(mapping_data).expect(ERR_MSG);
+            let dst = mapping_caps
+                .get(1)
+                .expect(ERR_MSG)
+                .as_str()
+                .parse::<usize>()
+                .expect("Could not parse mapping number");
+            let src = mapping_caps
+                .get(2)
+                .expect(ERR_MSG)
+                .as_str()
+                .parse::<usize>()
+                .expect("Could not parse mapping number");
+            let len = mapping_caps
+                .get(3)
+                .expect(ERR_MSG)
+                .as_str()
+                .parse::<usize>()
+                .expect("Could not parse mapping number");
+            mappings.push(Mapping { dst, src, len });
+        }
+        maps.push(Map { from, to, mappings });
+    }
+    (seeds, maps)
 }
 
 impl Map {
     fn convert(&self, key: usize) -> usize {
+        for mapping in &self.mappings {
+            if (mapping.src..mapping.src + mapping.len).contains(&key) {
+                return mapping.dst + key - mapping.src
+            }
+        }
         key
     }
 }
 
 fn get_location(maps: &Vec<Map>, seed: usize) -> usize {
-    1
+    let mut value = seed;
+    for map in maps {
+        value = map.convert(value);
+    }
+    value
 }
 
 fn answer(contents: &str) -> usize {
     let (seeds, maps) = parse_data(contents);
-    1
+    seeds
+        .into_iter()
+        .map(|seed| get_location(&maps, seed))
+        .min()
+        .expect("Could not find a minimum location")
 }
 
 #[derive(Debug, Parser)]
@@ -103,60 +167,60 @@ mod tests {
                         from: String::from("seed"),
                         to:   String::from("soil"),
                         mappings: vec![
-                            Mapping { src: 50, dst: 98, len: 2 },
-                            Mapping { src: 52, dst: 50, len: 48 },
+                            Mapping { dst: 50, src: 98, len: 2 },
+                            Mapping { dst: 52, src: 50, len: 48 },
                         ],
                     },
                     Map {
                         from: String::from("soil"),
                         to:   String::from("fertilizer"),
                         mappings: vec![
-                            Mapping { src: 0, dst: 15, len: 37 },
-                            Mapping { src: 37, dst: 52, len: 2 },
-                            Mapping { src: 39, dst: 0, len: 15 },
+                            Mapping { dst: 0, src: 15, len: 37 },
+                            Mapping { dst: 37, src: 52, len: 2 },
+                            Mapping { dst: 39, src: 0, len: 15 },
                         ],
                     },
                     Map {
                         from: String::from("fertilizer"),
                         to:   String::from("water"),
                         mappings: vec![
-                            Mapping { src: 49, dst: 53, len: 8 },
-                            Mapping { src: 0, dst: 11, len: 42 },
-                            Mapping { src: 42, dst: 0, len: 7 },
-                            Mapping { src: 57, dst: 7, len: 4 },
+                            Mapping { dst: 49, src: 53, len: 8 },
+                            Mapping { dst: 0, src: 11, len: 42 },
+                            Mapping { dst: 42, src: 0, len: 7 },
+                            Mapping { dst: 57, src: 7, len: 4 },
                         ],
                     },
                     Map {
                         from: String::from("water"),
                         to:   String::from("light"),
                         mappings: vec![
-                            Mapping { src: 88, dst: 18, len: 7 },
-                            Mapping { src: 18, dst: 25, len: 70 },
+                            Mapping { dst: 88, src: 18, len: 7 },
+                            Mapping { dst: 18, src: 25, len: 70 },
                         ],
                     },
                     Map {
                         from: String::from("light"),
                         to:   String::from("temperature"),
                         mappings: vec![
-                            Mapping { src: 45, dst: 77, len: 23 },
-                            Mapping { src: 81, dst: 45, len: 19 },
-                            Mapping { src: 68, dst: 64, len: 13 },
+                            Mapping { dst: 45, src: 77, len: 23 },
+                            Mapping { dst: 81, src: 45, len: 19 },
+                            Mapping { dst: 68, src: 64, len: 13 },
                         ],
                     },
                     Map {
                         from: String::from("temperature"),
                         to:   String::from("humidity"),
                         mappings: vec![
-                            Mapping { src: 0, dst: 69, len: 1 },
-                            Mapping { src: 1, dst: 0, len: 69 },
+                            Mapping { dst: 0, src: 69, len: 1 },
+                            Mapping { dst: 1, src: 0, len: 69 },
                         ],
                     },
                     Map {
                         from: String::from("humidity"),
                         to:   String::from("location"),
                         mappings: vec![
-                            Mapping { src: 60, dst: 56, len: 37 },
-                            Mapping { src: 56, dst: 93, len: 4 },
+                            Mapping { dst: 60, src: 56, len: 37 },
+                            Mapping { dst: 56, src: 93, len: 4 },
                         ],
                     },
                 ],
@@ -170,60 +234,60 @@ mod tests {
             from: String::from("seed"),
             to:   String::from("soil"),
             mappings: vec![
-                Mapping { src: 50, dst: 98, len: 2 },
-                Mapping { src: 52, dst: 50, len: 48 },
+                Mapping { dst: 50, src: 98, len: 2 },
+                Mapping { dst: 52, src: 50, len: 48 },
             ],
         };
         let fertilizer = Map {
             from: String::from("soil"),
             to:   String::from("fertilizer"),
             mappings: vec![
-                Mapping { src: 0, dst: 15, len: 37 },
-                Mapping { src: 37, dst: 52, len: 2 },
-                Mapping { src: 39, dst: 0, len: 15 },
+                Mapping { dst: 0, src: 15, len: 37 },
+                Mapping { dst: 37, src: 52, len: 2 },
+                Mapping { dst: 39, src: 0, len: 15 },
             ],
         };
         let water = Map {
             from: String::from("fertilizer"),
             to:   String::from("water"),
             mappings: vec![
-                Mapping { src: 49, dst: 53, len: 8 },
-                Mapping { src: 0, dst: 11, len: 42 },
-                Mapping { src: 42, dst: 0, len: 7 },
-                Mapping { src: 57, dst: 7, len: 4 },
+                Mapping { dst: 49, src: 53, len: 8 },
+                Mapping { dst: 0, src: 11, len: 42 },
+                Mapping { dst: 42, src: 0, len: 7 },
+                Mapping { dst: 57, src: 7, len: 4 },
             ],
         };
         let light = Map {
             from: String::from("water"),
             to:   String::from("light"),
             mappings: vec![
-                Mapping { src: 88, dst: 18, len: 7 },
-                Mapping { src: 18, dst: 25, len: 70 },
+                Mapping { dst: 88, src: 18, len: 7 },
+                Mapping { dst: 18, src: 25, len: 70 },
             ],
         };
         let temperature = Map {
             from: String::from("light"),
             to:   String::from("temperature"),
             mappings: vec![
-                Mapping { src: 45, dst: 77, len: 23 },
-                Mapping { src: 81, dst: 45, len: 19 },
-                Mapping { src: 68, dst: 64, len: 13 },
+                Mapping { dst: 45, src: 77, len: 23 },
+                Mapping { dst: 81, src: 45, len: 19 },
+                Mapping { dst: 68, src: 64, len: 13 },
             ],
         };
         let humidity = Map {
             from: String::from("temperature"),
             to:   String::from("humidity"),
             mappings: vec![
-                Mapping { src: 0, dst: 69, len: 1 },
-                Mapping { src: 1, dst: 0, len: 69 },
+                Mapping { dst: 0, src: 69, len: 1 },
+                Mapping { dst: 1, src: 0, len: 69 },
             ],
         };
         let location = Map {
             from: String::from("humidity"),
             to:   String::from("location"),
             mappings: vec![
-                Mapping { src: 60, dst: 56, len: 37 },
-                Mapping { src: 56, dst: 93, len: 4 },
+                Mapping { dst: 60, src: 56, len: 37 },
+                Mapping { dst: 56, src: 93, len: 4 },
             ],
         };
 
@@ -246,7 +310,7 @@ mod tests {
         assert_eq!(soil.convert(55), 57);
         assert_eq!(fertilizer.convert(57), 57);
         assert_eq!(water.convert(57), 53);
-        assert_eq!(light.convert(81), 46);
+        assert_eq!(light.convert(53), 46);
         assert_eq!(temperature.convert(46), 82);
         assert_eq!(humidity.convert(82), 82);
         assert_eq!(location.convert(82), 86);
@@ -267,60 +331,60 @@ mod tests {
                 from: String::from("seed"),
                 to:   String::from("soil"),
                 mappings: vec![
-                    Mapping { src: 50, dst: 98, len: 2 },
-                    Mapping { src: 52, dst: 50, len: 48 },
+                    Mapping { dst: 50, src: 98, len: 2 },
+                    Mapping { dst: 52, src: 50, len: 48 },
                 ],
             },
             Map {
                 from: String::from("soil"),
                 to:   String::from("fertilizer"),
                 mappings: vec![
-                    Mapping { src: 0, dst: 15, len: 37 },
-                    Mapping { src: 37, dst: 52, len: 2 },
-                    Mapping { src: 39, dst: 0, len: 15 },
+                    Mapping { dst: 0, src: 15, len: 37 },
+                    Mapping { dst: 37, src: 52, len: 2 },
+                    Mapping { dst: 39, src: 0, len: 15 },
                 ],
             },
             Map {
                 from: String::from("fertilizer"),
                 to:   String::from("water"),
                 mappings: vec![
-                    Mapping { src: 49, dst: 53, len: 8 },
-                    Mapping { src: 0, dst: 11, len: 42 },
-                    Mapping { src: 42, dst: 0, len: 7 },
-                    Mapping { src: 57, dst: 7, len: 4 },
+                    Mapping { dst: 49, src: 53, len: 8 },
+                    Mapping { dst: 0, src: 11, len: 42 },
+                    Mapping { dst: 42, src: 0, len: 7 },
+                    Mapping { dst: 57, src: 7, len: 4 },
                 ],
             },
             Map {
                 from: String::from("water"),
                 to:   String::from("light"),
                 mappings: vec![
-                    Mapping { src: 88, dst: 18, len: 7 },
-                    Mapping { src: 18, dst: 25, len: 70 },
+                    Mapping { dst: 88, src: 18, len: 7 },
+                    Mapping { dst: 18, src: 25, len: 70 },
                 ],
             },
             Map {
                 from: String::from("light"),
                 to:   String::from("temperature"),
                 mappings: vec![
-                    Mapping { src: 45, dst: 77, len: 23 },
-                    Mapping { src: 81, dst: 45, len: 19 },
-                    Mapping { src: 68, dst: 64, len: 13 },
+                    Mapping { dst: 45, src: 77, len: 23 },
+                    Mapping { dst: 81, src: 45, len: 19 },
+                    Mapping { dst: 68, src: 64, len: 13 },
                 ],
             },
             Map {
                 from: String::from("temperature"),
                 to:   String::from("humidity"),
                 mappings: vec![
-                    Mapping { src: 0, dst: 69, len: 1 },
-                    Mapping { src: 1, dst: 0, len: 69 },
+                    Mapping { dst: 0, src: 69, len: 1 },
+                    Mapping { dst: 1, src: 0, len: 69 },
                 ],
             },
             Map {
                 from: String::from("humidity"),
                 to:   String::from("location"),
                 mappings: vec![
-                    Mapping { src: 60, dst: 56, len: 37 },
-                    Mapping { src: 56, dst: 93, len: 4 },
+                    Mapping { dst: 60, src: 56, len: 37 },
+                    Mapping { dst: 56, src: 93, len: 4 },
                 ],
             },
         ];
