@@ -98,8 +98,7 @@ impl Map {
             let matched: Mapping = self.mappings
                 .clone()
                 .into_iter()
-                .filter(|mapping| start_left >= mapping.src && start_left < mapping.src + mapping.len)
-                .next()
+                .find(|mapping| start_left >= mapping.src && start_left < mapping.src + mapping.len)
                 .unwrap_or_else(|| {
                     let next_matching = self.mappings
                         .iter()
@@ -112,7 +111,7 @@ impl Map {
                         dst: start_left,
                         len: next_matching - start_left,
                     }
-                }).clone();
+                });
 
             let seeds_consumed = min(
                 len_left,
@@ -153,17 +152,17 @@ fn answer(contents: &str, use_ranges: bool) -> i64 {
     if use_ranges {
         let mut iter = seeds.into_iter();
         let chunks = from_fn(|| if let (Some(start), Some(len)) = (iter.next(), iter.next()) { Some((start, len)) } else { None });
-        return chunks
+        chunks
             .flat_map(|(start, len)| get_location_range(&maps, start, len))
             .map(|(start, _)| start)
             .min()
-            .expect("Could not find a minimum location");
+            .expect("Could not find a minimum location")
     } else {
-        return seeds
+        seeds
             .into_iter()
             .map(|seed| get_location(&maps, seed))
             .min()
-            .expect("Could not find a minimum location");
+            .expect("Could not find a minimum location")
     }
 }
 
