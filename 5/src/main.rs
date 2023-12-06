@@ -96,9 +96,9 @@ impl Map {
         let mut len_left  = len;
         while len_left > 0 {
             let matched: Mapping = self.mappings
-                .clone()
-                .into_iter()
+                .iter()
                 .find(|mapping| start_left >= mapping.src && start_left < mapping.src + mapping.len)
+                .map(|mapping| mapping.clone())
                 .unwrap_or_else(|| {
                     let next_matching = self.mappings
                         .iter()
