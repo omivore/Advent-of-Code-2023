@@ -32,7 +32,7 @@ func main() {
     defer file.Close()
 
     scanner := bufio.NewScanner(file)
-    races := boat.ParseData(scanner)
+    races := boat.ParseData(scanner, *kerning)
 
     product := 1
     for _, race := range races {

@@ -33,7 +33,7 @@ func (r Race) HoldToBeat() (valid []int) {
     return
 }
 
-func ParseData(scanner *bufio.Scanner) (races []Race) {
+func ParseData(scanner *bufio.Scanner, kerning bool) (races []Race) {
     if !scanner.Scan() {
         panic("Failed to read first line")
     }
@@ -49,12 +49,20 @@ func ParseData(scanner *bufio.Scanner) (races []Race) {
 
     var time, distance float64
     var err error
-    for i := 0; i < len(times); i++ {
-        time, err = strconv.ParseFloat(times[i], 64)
+    if kerning {
+        time, err = strconv.ParseFloat(strings.Join(times, ""), 64)
         if err != nil { panic("Could not parse times.") }
-        distance, err = strconv.ParseFloat(distances[i], 64)
+        distance, err = strconv.ParseFloat(strings.Join(distances, ""), 64)
         if err != nil { panic("Could not parse distances.") }
-        races = append(races, Race{ time: time, distance: distance })
+        races = append(races, Race { time: time, distance: distance })
+    } else {
+        for i := 0; i < len(times); i++ {
+            time, err = strconv.ParseFloat(times[i], 64)
+            if err != nil { panic("Could not parse times.") }
+            distance, err = strconv.ParseFloat(distances[i], 64)
+            if err != nil { panic("Could not parse distances.") }
+            races = append(races, Race{ time: time, distance: distance })
+        }
     }
     return
 }

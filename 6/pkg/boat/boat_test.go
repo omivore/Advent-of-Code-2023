@@ -50,9 +50,12 @@ func TestChargeToBeat(t *testing.T) {
 
 func TestParseData(t *testing.T) {
     input := "Time:      7  15   30\nDistance:  9  40  200"
-    scanner := bufio.NewScanner(strings.NewReader(input))
-    got := ParseData(scanner)
-    expected := []Race{
+    var scanner *bufio.Scanner
+    var got, expected []Race
+
+    scanner = bufio.NewScanner(strings.NewReader(input))
+    got = ParseData(scanner, false)
+    expected = []Race{
         {time: 7, distance: 9},
         {time: 15, distance: 40},
         {time: 30, distance: 200},
@@ -60,6 +63,22 @@ func TestParseData(t *testing.T) {
 
     if len(got) != 3 {
         t.Errorf("Expected 3 Rounds, got %d Rounds.", len(got))
+    }
+
+    for i := range got {
+        if got[i] != expected[i] {
+            t.Errorf("Expected %#v, got %#v.", expected[i], got[i])
+        }
+    }
+
+    scanner = bufio.NewScanner(strings.NewReader(input))
+    got = ParseData(scanner, true)
+    expected = []Race{
+        {time: 71530, distance: 940200},
+    }
+
+    if len(got) != 1 {
+        t.Errorf("Expected 1 Rounds, got %d Rounds.", len(got))
     }
 
     for i := range got {

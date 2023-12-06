@@ -9,5 +9,5 @@ tasks:
       - go test ./...
   solve:
     cmds:
-      - 'echo "2022.6.1: $(go run cmd/solve/main.go -- input)"'
-      #- 'echo "2022.2.2: $(go run cmd/solve2/main.go -- input)"'
+      - 'echo "2023.6.1: $(go run cmd/solve/main.go input)"'
+      - 'echo "2023.6.2: $(go run cmd/solve/main.go --kerning input)"'
