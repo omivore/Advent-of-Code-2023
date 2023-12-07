@@ -17,6 +17,11 @@ func check(e error) {
 }
 
 func main() {
+    joker := flag.Bool(
+        "joker",
+        false,
+        "Treat J as a Joker",
+    )
     flag.Parse()
     if flag.NArg() < 1 {
         panic("No command line arguments found")
@@ -27,7 +32,7 @@ func main() {
     defer file.Close()
 
     scanner := bufio.NewScanner(file)
-    bids := poker.ParseData(scanner)
+    bids := poker.ParseData(scanner, *joker)
 
     result := poker.TotalWinnings(bids)
     fmt.Printf("%d\n", result)

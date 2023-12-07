@@ -10,7 +10,8 @@ import (
 type Value int
 
 const (
-    c2 Value = iota + 2
+    joker Value = iota
+    c2
     c3
     c4
     c5
@@ -39,8 +40,13 @@ type Bid struct {
 
 func CalculateType(hand []Value) Value {
     cardFreq := make(map[Value]int)
+    jokers := 0
     for _, card := range hand {
-        cardFreq[card] += 1
+        if card != joker {
+            cardFreq[card] += 1
+        } else {
+            jokers += 1
+        }
     }
 
     freqFreq := make(map[int]int)
@@ -48,15 +54,58 @@ func CalculateType(hand []Value) Value {
         freqFreq[freq] += 1
     }
 
-    if freqFreq[5] == 1 { return h5k }
-    if freqFreq[4] == 1 { return h4k }
-    if freqFreq[3] == 1 && freqFreq[2] == 1 { return hFh }
-    if freqFreq[3] == 1 { return h3k }
-    if freqFreq[2] == 2 { return h2p }
-    if freqFreq[2] == 1 { return h1p }
-    if freqFreq[1] == 5 { return hHi }
-
-    panic("Could not find hand")
+    if freqFreq[5] == 1 {
+        return h5k
+    } else if freqFreq[4] == 1 {
+        if jokers == 1 {
+            return h5k
+        } else {
+            return h4k
+        }
+    } else if freqFreq[3] == 1 {
+        switch jokers {
+        case 1:
+            return h4k
+        case 2:
+            return h5k
+        default:
+            if freqFreq[2] == 1 {
+                return hFh
+            } else {
+                return h3k
+            }
+        }
+    } else if freqFreq[2] == 2 {
+        if jokers == 1 {
+            return hFh
+        } else {
+            return h2p
+        }
+    } else if freqFreq[2] == 1 {
+        switch jokers {
+        case 1:
+            return h3k
+        case 2:
+            return h4k
+        case 3:
+            return h5k
+        default:
+            return h1p
+        }
+    } else {
+        switch jokers {
+        case 1:
+            return h1p
+        case 2:
+            return h3k
+        case 3:
+            return h4k
+        case 4, 5:
+            return h5k
+        default:
+            return hHi
+        }
+    }
 }
 
 func CalculateValue(hand []Value) (values []Value) {
@@ -82,14 +131,14 @@ func TotalWinnings(bids []Bid) (total int) {
     return
 }
 
-func ParseData(scanner *bufio.Scanner) (bids []Bid) {
+func ParseData(scanner *bufio.Scanner, useJoker bool) (bids []Bid) {
     for scanner.Scan() {
         bid_data := strings.Split(scanner.Text(), " ")
         if len(bid_data) != 2 {
             panic("Expected two inputs.")
         }
 
-        hand := ParseHand(strings.Split(bid_data[0], ""))
+        hand := ParseHand(strings.Split(bid_data[0], ""), useJoker)
         wager, err := strconv.Atoi(bid_data[1])
         if err != nil {
             panic("Could not parse wager value")
@@ -107,15 +156,15 @@ func ParseData(scanner *bufio.Scanner) (bids []Bid) {
     return
 }
 
-func ParseHand(hand_data []string) (hand []Value) {
+func ParseHand(hand_data []string, useJoker bool) (hand []Value) {
     for _, card_data := range hand_data {
-        hand = append(hand, MapStringToValue(card_data))
+        hand = append(hand, MapStringToValue(card_data, useJoker))
     }
 
     return
 }
 
-func MapStringToValue(in string) Value {
+func MapStringToValue(in string, useJoker bool) Value {
     switch in {
     case "2":
         return c2
@@ -136,7 +185,7 @@ func MapStringToValue(in string) Value {
     case "T":
         return cT
     case "J":
-        return cJ
+        if useJoker { return joker } else { return cJ }
     case "Q":
         return cQ
     case "K":
