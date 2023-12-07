@@ -34,6 +34,12 @@ includes:
   5:
     taskfile: ./5/Taskfile.yml
     dir:      ./5
+  6:
+    taskfile: ./6/Taskfile.yml
+    dir:      ./6
+  7:
+    taskfile: ./7/Taskfile.yml
+    dir:      ./7
 
 tasks:
   lint:
@@ -49,6 +55,8 @@ tasks:
       3:lint,
       4:lint,
       5:lint,
+      6:lint,
+      7:lint,
     ]
 
   test:
@@ -64,6 +72,8 @@ tasks:
       3:test,
       4:test,
       5:test,
+      6:test,
+      7:test,
     ]
 
   solve:
@@ -79,4 +89,6 @@ tasks:
       3:solve,
       4:solve,
       5:solve,
+      6:solve,
+      7:solve,
     ]
