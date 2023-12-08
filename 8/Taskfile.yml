@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - '$(go env GOPATH)/bin/golangci-lint run'
+  test:
+    cmds:
+      - go test ./...
+  solve:
+    cmds:
+      - 'echo "2023.8.1: $(go run cmd/solve/main.go input)"'
+      #- 'echo "2023.8.2: $(go run cmd/solve/main.go --joker input)"'
