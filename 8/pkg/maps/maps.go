@@ -3,6 +3,7 @@ package maps
 import (
     "bufio"
     "regexp"
+    "slices"
     "strings"
 )
 
@@ -67,29 +68,64 @@ func FindGhostStart(maps []Map) (starts []*Map) {
     return
 }
 
-func IsAllEnded(maps []*Map) bool {
-    for i, _ := range maps {
-        if !strings.HasSuffix(maps[i].name, "Z") {
+func IsAllSameStep(steps []int) bool {
+    if len(steps) == 0 {
+        return true
+    }
+    value := steps[0]
+    for _, s := range steps {
+        if s != value {
             return false
         }
     }
     return true
 }
 
-func CountGhostMovements(directions []Direction, maps []Map) int {
-    var current []*Map = FindGhostStart(maps)
-    var gps = Directions(directions)
-    var direction Direction
-    count := 0
-    for !IsAllEnded(current) {
-        direction = gps()
-        for i, _ := range current {
-            current[i] = current[i].FollowDirection(direction)
-        }
-        count += 1
+func IncrementLessers(current []int, loop []int) []int {
+    if len(current) != len(loop) {
+        panic("Not enough loop steps for each current stepping")
     }
 
-    return count
+    topValue := slices.Max(current)
+    for i, _ := range current {
+        for current[i] < topValue {
+            current[i] += loop[i]
+        }
+    }
+    return current
+}
+
+func CountGhostMovements(directions []Direction, maps []Map) int {
+    var current []*Map = FindGhostStart(maps)
+    var gpss = make([]func() Direction, len(current))
+    var initialSteps = make([]int, len(current))
+    var direction Direction
+    for i, _ := range current {
+        gpss[i] = Directions(directions)
+        for !strings.HasSuffix(current[i].name, "Z") {
+            direction = gpss[i]()
+            current[i] = current[i].FollowDirection(direction)
+            initialSteps[i] += 1
+        }
+    }
+    var loopSteps = make([]int, len(current))
+    for i, _ := range current {
+        direction = gpss[i]()
+        current[i] = current[i].FollowDirection(direction)
+        loopSteps[i] += 1
+        for !strings.HasSuffix(current[i].name, "Z") {
+            direction = gpss[i]()
+            current[i] = current[i].FollowDirection(direction)
+            loopSteps[i] += 1
+        }
+    }
+
+    currentSteps := initialSteps
+    for !IsAllSameStep(currentSteps) {
+        currentSteps = IncrementLessers(currentSteps, loopSteps)
+    }
+
+    return currentSteps[0]
 }
 
 var r = regexp.MustCompile(`^([A-Z1-9]{3}) = \(([A-Z1-9]{3}), ([A-Z1-9]{3})\)$`)
