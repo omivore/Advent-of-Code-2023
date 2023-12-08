@@ -10,4 +10,4 @@ tasks:
   solve:
     cmds:
       - 'echo "2023.8.1: $(go run cmd/solve/main.go input)"'
-      #- 'echo "2023.8.2: $(go run cmd/solve/main.go --joker input)"'
+      - 'echo "2023.8.2: $(go run cmd/solve/main.go --ghost input)"'

@@ -58,7 +58,41 @@ func CountMovements(directions []Direction, maps []Map) int {
     return count
 }
 
-var r = regexp.MustCompile(`^([A-Z]{3}) = \(([A-Z]{3}), ([A-Z]{3})\)$`)
+func FindGhostStart(maps []Map) (starts []*Map) {
+    for i, _ := range maps {
+        if strings.HasSuffix(maps[i].name, "A") {
+            starts = append(starts, &maps[i])
+        }
+    }
+    return
+}
+
+func IsAllEnded(maps []*Map) bool {
+    for i, _ := range maps {
+        if !strings.HasSuffix(maps[i].name, "Z") {
+            return false
+        }
+    }
+    return true
+}
+
+func CountGhostMovements(directions []Direction, maps []Map) int {
+    var current []*Map = FindGhostStart(maps)
+    var gps = Directions(directions)
+    var direction Direction
+    count := 0
+    for !IsAllEnded(current) {
+        direction = gps()
+        for i, _ := range current {
+            current[i] = current[i].FollowDirection(direction)
+        }
+        count += 1
+    }
+
+    return count
+}
+
+var r = regexp.MustCompile(`^([A-Z1-9]{3}) = \(([A-Z1-9]{3}), ([A-Z1-9]{3})\)$`)
 
 func ParseData(scanner *bufio.Scanner) (directions []Direction, maps []Map) {
     scanned := scanner.Scan()

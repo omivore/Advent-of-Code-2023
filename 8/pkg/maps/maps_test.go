@@ -119,6 +119,67 @@ func TestFollowDirection(t *testing.T) {
     }
 }
 
+func TestCountGhostMovements(t *testing.T) {
+    a1 := Map {
+        name: "11A",
+        paths: make(map[Direction]*Map),
+    }
+    b1 := Map {
+        name: "11B",
+        paths: make(map[Direction]*Map),
+    }
+    z1 := Map {
+        name: "11Z",
+        paths: make(map[Direction]*Map),
+    }
+    a2 := Map {
+        name: "22A",
+        paths: make(map[Direction]*Map),
+    }
+    b2 := Map {
+        name: "22B",
+        paths: make(map[Direction]*Map),
+    }
+    c2 := Map {
+        name: "22C",
+        paths: make(map[Direction]*Map),
+    }
+    z2 := Map {
+        name: "22Z",
+        paths: make(map[Direction]*Map),
+    }
+    x := Map {
+        name: "XXX",
+        paths: make(map[Direction]*Map),
+    }
+    a1.paths[left] = &b1
+    a1.paths[right] = &x
+    b1.paths[left] = &x
+    b1.paths[right] = &z1
+    z1.paths[left] = &b1
+    z1.paths[right] = &x
+    a2.paths[left] = &b2
+    a2.paths[right] = &x
+    b2.paths[left] = &c2
+    b2.paths[right] = &c2
+    c2.paths[left] = &z2
+    c2.paths[right] = &z2
+    z2.paths[left] = &b2
+    z2.paths[right] = &b2
+    x.paths[left] = &x
+    x.paths[right] = &x
+
+    var got, expected int
+    got = CountGhostMovements(
+        []Direction{left, right},
+        []Map{a1, b1, z1, a2, b2, c2, z2, x},
+    )
+    expected = 6
+    if expected != got {
+        t.Errorf("Expected %d, got %d.", expected, got)
+    }
+}
+
 func TestCountMovements(t *testing.T) {
     a := Map {
         name: "AAA",

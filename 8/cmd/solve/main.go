@@ -17,6 +17,11 @@ func check(e error) {
 }
 
 func main() {
+    ghost := flag.Bool(
+        "ghost",
+        false,
+        "Travel as a ghost",
+    )
     flag.Parse()
     if flag.NArg() < 1 {
         panic("No command line arguments found")
@@ -28,6 +33,11 @@ func main() {
 
     scanner := bufio.NewScanner(file)
     directions, maps := pkg.ParseData(scanner)
-    result := pkg.CountMovements(directions, maps)
+    var result int
+    if *ghost {
+        result = pkg.CountGhostMovements(directions, maps)
+    } else {
+        result = pkg.CountMovements(directions, maps)
+    }
     fmt.Printf("%d\n", result)
 }
