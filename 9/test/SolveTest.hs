@@ -3,7 +3,7 @@ module Main (main) where
 import Test.HUnit
 import Test.Framework
 import Test.Framework.Providers.HUnit
-import Solve (toHistory, differential, deriveHistories, cascadeHistories)
+import Solve (toHistory, differential, deriveHistories, cascadeHistories, cascadeFutures)
 
 main :: IO ()
 main = defaultMain $ hUnitTestToTests $ TestList [
@@ -74,7 +74,8 @@ main = defaultMain $ hUnitTestToTests $ TestList [
         (
             [
                 [0, 3, 6, 9, 12, 15],
-                [3, 3, 3, 3, 3]
+                [3, 3, 3, 3, 3],
+                [0, 0 , 0, 0]
             ],
             18
         ),
@@ -82,7 +83,8 @@ main = defaultMain $ hUnitTestToTests $ TestList [
             [
                 [1, 3, 6, 10, 15, 21],
                 [2, 3, 4, 5, 6],
-                [1, 1, 1, 1]
+                [1, 1, 1, 1],
+                [0, 0, 0]
             ],
             28
         ),
@@ -98,5 +100,39 @@ main = defaultMain $ hUnitTestToTests $ TestList [
         )
       ]
     let actual = cascadeHistories 0 dt
+    return $ expected ~=? actual
+    ,
+    "can extrapolate previous step of future" ~: do
+    (dt, expected) <-
+      [
+        (
+            [
+                [0, 3, 6, 9, 12, 15],
+                [3, 3, 3, 3, 3],
+                [0, 0, 0, 0]
+            ],
+            -3
+        ),
+        (
+            [
+                [1, 3, 6, 10, 15, 21],
+                [2, 3, 4, 5, 6],
+                [1, 1, 1, 1],
+                [0, 0, 0]
+            ],
+            0
+        ),
+        (
+            [
+                [10, 13, 16, 21, 30, 45],
+                [3, 3, 5, 9, 15],
+                [0, 2, 4, 6],
+                [2, 2, 2],
+                [0, 0]
+            ],
+            5
+        )
+      ]
+    let actual = cascadeFutures 0 dt
     return $ expected ~=? actual
   ]

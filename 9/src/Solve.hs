@@ -27,3 +27,10 @@ deriveHistories history
 cascadeHistories :: Integer -> [History] -> Integer
 cascadeHistories next [topHistory] = stepHistory next topHistory
 cascadeHistories next histories = cascadeHistories (stepHistory next (last histories)) (init histories)
+
+stepFuture :: Integer -> History -> Integer
+stepFuture next (future:_) = future - next
+
+cascadeFutures :: Integer -> [History] -> Integer
+cascadeFutures next [topFuture] = stepFuture next topFuture
+cascadeFutures next futures = cascadeFutures (stepFuture next (last futures)) (init futures)
