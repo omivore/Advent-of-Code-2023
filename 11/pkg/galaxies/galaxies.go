@@ -59,7 +59,7 @@ func GetPairs(gals []Position) (pairs []Pair) {
     return
 }
 
-func CalculateDistance(pair Pair, emptyY map[int]bool, emptyX map[int]bool) (dist int) {
+func CalculateDistance(pair Pair, emptyY map[int]bool, emptyX map[int]bool, expandBy int) (dist int) {
     lessX := min(pair.first.x, pair.second.x)
     moreX := max(pair.first.x, pair.second.x)
     lessY := min(pair.first.y, pair.second.y)
@@ -67,14 +67,14 @@ func CalculateDistance(pair Pair, emptyY map[int]bool, emptyX map[int]bool) (dis
 
     for i := lessX; i < moreX; i++ {
         if emptyX[i] {
-            dist += 2
+            dist += expandBy
         } else {
             dist += 1
         }
     }
     for i := lessY; i < moreY; i++ {
         if emptyY[i] {
-            dist += 2
+            dist += expandBy
         } else {
             dist += 1
         }
