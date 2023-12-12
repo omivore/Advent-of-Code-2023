@@ -17,7 +17,7 @@ func check(e error) {
 }
 
 func main() {
-    _ = flag.Bool(
+    part2 := flag.Bool(
         "part2",
         false,
         "Activate whatever part 2 wants",
@@ -36,8 +36,16 @@ func main() {
     var result int
     for scanner.Scan() {
         line := scanner.Text()
-        groups, sets := pkg.ParseRow(line)
-        result += pkg.EnumerateValid(groups, sets)
+        var groups []string
+        var sets []int
+        if *part2 {
+            groups, sets = pkg.UnfoldRow(line)
+        } else {
+            groups, sets = pkg.ParseRow(line)
+        }
+        numValid := pkg.EnumerateValid(groups, sets)
+        fmt.Println(numValid)
+        result += numValid
     }
     fmt.Printf("%d\n", result)
 }

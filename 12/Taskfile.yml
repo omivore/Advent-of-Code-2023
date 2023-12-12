@@ -10,4 +10,4 @@ tasks:
   solve:
     cmds:
       - 'echo "2023.12.1: $(go run cmd/solve/main.go input)"'
-      #- 'echo "2023.12.2: $(go run cmd/solve/main.go --older input)"'
+      - 'echo "2023.12.2: $(go run cmd/solve/main.go --part2 input)"'
