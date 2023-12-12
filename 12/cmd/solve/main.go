@@ -36,6 +36,7 @@ func main() {
     var result int
     for scanner.Scan() {
         line := scanner.Text()
+        cache := make(map[string]int)
         var groups []string
         var sets []int
         if *part2 {
@@ -43,8 +44,7 @@ func main() {
         } else {
             groups, sets = pkg.ParseRow(line)
         }
-        numValid := pkg.EnumerateValid(groups, sets)
-        fmt.Println(numValid)
+        numValid := pkg.EnumerateValid(groups, sets, cache)
         result += numValid
     }
     fmt.Printf("%d\n", result)

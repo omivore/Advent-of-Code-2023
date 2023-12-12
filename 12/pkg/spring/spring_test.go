@@ -89,7 +89,7 @@ func TestEnumerateValid(t *testing.T) {
     inputGroup = []string{"???", "###"}
     inputSet = []int{1, 1, 3}
     fmt.Println("Test 1")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     expected = 1
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
@@ -99,7 +99,7 @@ func TestEnumerateValid(t *testing.T) {
     inputSet = []int{1, 1, 3}
     expected = 4
     fmt.Println("Test 2")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
     }
@@ -107,7 +107,7 @@ func TestEnumerateValid(t *testing.T) {
     inputGroup = []string{"?#?#?#?#?#?#?#?"}
     inputSet = []int{1, 3, 1, 6}
     fmt.Println("Test 3")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     expected = 1
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
@@ -116,7 +116,7 @@ func TestEnumerateValid(t *testing.T) {
     inputGroup = []string{"????", "#", "#"}
     inputSet = []int{4, 1, 1}
     fmt.Println("Test 4")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     expected = 1
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
@@ -125,7 +125,7 @@ func TestEnumerateValid(t *testing.T) {
     inputGroup = []string{"????", "######", "#####"}
     inputSet = []int{1, 6, 5}
     fmt.Println("Test 5")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     expected = 4
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
@@ -134,7 +134,7 @@ func TestEnumerateValid(t *testing.T) {
     inputGroup = []string{"?###????????"}
     inputSet = []int{3, 2, 1}
     fmt.Println("Test 6")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     expected = 10
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
@@ -147,7 +147,7 @@ func TestEnumerateValid(t *testing.T) {
     inputGroup = []string{"???", "###????", "###????", "###????", "###????", "###"}
     inputSet = []int{1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3}
     fmt.Println("Test 2.1")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     expected = 1
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
@@ -157,7 +157,7 @@ func TestEnumerateValid(t *testing.T) {
     inputSet = []int{1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3}
     expected = 16384
     fmt.Println("Test 2.2")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
     }
@@ -165,7 +165,7 @@ func TestEnumerateValid(t *testing.T) {
     inputGroup = []string{"?#?#?#?#?#?#?#???#?#?#?#?#?#?#???#?#?#?#?#?#?#???#?#?#?#?#?#?#???#?#?#?#?#?#?#?"}
     inputSet = []int{1, 3, 1, 6, 1, 3, 1, 6, 1, 3, 1, 6, 1, 3, 1, 6, 1, 3, 1, 6}
     fmt.Println("Test 2.3")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     expected = 1
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
@@ -174,7 +174,7 @@ func TestEnumerateValid(t *testing.T) {
     inputGroup = []string{"????", "#", "#", "?????", "#", "#", "?????", "#", "#", "?????", "#", "#", "?????", "#", "#"}
     inputSet = []int{4, 1, 1, 4, 1, 1, 4, 1, 1, 4, 1, 1, 4, 1, 1}
     fmt.Println("Test 2.4")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     expected = 16
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
@@ -183,7 +183,7 @@ func TestEnumerateValid(t *testing.T) {
     inputGroup = []string{"????", "######", "#####", "?", "????", "######", "#####", "?", "????", "######", "#####", "?", "????", "######", "#####", "?", "????", "######", "#####"}
     inputSet = []int{1, 6, 5, 1, 6, 5, 1, 6, 5, 1, 6, 5, 1, 6, 5}
     fmt.Println("Test 2.5")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     expected = 2500
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)
@@ -192,7 +192,7 @@ func TestEnumerateValid(t *testing.T) {
     inputGroup = []string{"?###??????????###??????????###??????????###??????????###????????"}
     inputSet = []int{3, 2, 1, 3, 2, 1, 3, 2, 1, 3, 2, 1, 3, 2, 1}
     fmt.Println("Test 2.6")
-    got = EnumerateValid(inputGroup, inputSet)
+    got = EnumerateValid(inputGroup, inputSet, make(map[string]int))
     expected = 506250
     if expected != got {
         t.Errorf("Expected %d, got %d", expected, got)

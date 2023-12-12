@@ -103,11 +103,31 @@ func EnumerateRemainders(grouping string, sets []int) ([]string, [][]int) {
     return remainders, remainingSets
 }
 
-func EnumerateValid(groups []string, sets []int) (count int) {
+func SerializeSet(groups []string, sets []int) string {
+    var sb strings.Builder
+    for _, group := range groups {
+        sb.WriteString(group)
+        sb.WriteString(".")
+    }
+    sb.WriteString(" ")
+    for _, set := range sets {
+        sb.WriteString(strconv.Itoa(set))
+        sb.WriteString(",")
+    }
+
+    return sb.String()
+}
+
+func EnumerateValid(groups []string, sets []int, cache map[string]int) (count int) {
+    serializedId := SerializeSet(groups, sets)
     if len(groups) == 0 && len(sets) == 0 {
         return 1
     } else if (len(groups) == 0 && len(sets) > 0) {
         return 0
+    }
+
+    if v, ok := cache[serializedId]; ok {
+        return v
     }
 
     remainders, remainingSets := EnumerateRemainders(groups[0], sets)
@@ -118,8 +138,9 @@ func EnumerateValid(groups []string, sets []int) (count int) {
         } else {
             completeRemainder = append([]string{remainders[i]} , groups[1:]...)
         }
-        count += EnumerateValid(completeRemainder, remainingSets[i])
+        count += EnumerateValid(completeRemainder, remainingSets[i], cache)
     }
 
+    cache[serializedId] = count
     return
 }
