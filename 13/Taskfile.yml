@@ -1,0 +1,22 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - java -jar ../checkstyle-10.12.5-all.jar -c /google_checks.xml src/
+  build:
+    cmds:
+      - mvn package
+    sources:
+      - src/main/**/*.java
+    generates:
+      - target/**/*.jar
+  test:
+    deps: [build]
+    cmds:
+      - mvn test
+  solve:
+    deps: [build]
+    cmds:
+      - 'echo "2023.13.1: $(mvn -q exec:java -Dexec.mainClass=adventofcode.day13.Main1)"'
+      #- 'echo "2022.3.2: $(mvn -q exec:java -Dexec.mainClass=adventofcode.beta3.Main2)"'
