@@ -118,4 +118,32 @@ class SolverTests {
     );
     assertEquals(400, Solver.summarizeFindings(input));
   }
+
+  @Test
+  void summarizesSmudges() {
+    List<String> input;
+    int expected, got;
+
+    input = Arrays.asList(
+      "#.##..##.",
+      "..#.##.#.",
+      "##......#",
+      "##......#",
+      "..#.##.#.",
+      "..##..##.",
+      "#.#.##.#."
+    );
+    assertEquals(300, Solver.summarizeSmudges(input));
+
+    input = Arrays.asList(
+      "#...##..#",
+      "#....#..#",
+      "..##..###",
+      "#####.##.",
+      "#####.##.",
+      "..##..###",
+      "#....#..#"
+    );
+    assertEquals(100, Solver.summarizeSmudges(input));
+  }
 }
