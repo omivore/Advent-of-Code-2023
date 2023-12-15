@@ -19,4 +19,4 @@ tasks:
     deps: [build]
     cmds:
       - 'echo "2023.14.1: $(mvn -q exec:java -Dexec.mainClass=adventofcode.day14.Main1)"'
-      #- 'echo "2023.14.2: $(mvn -q exec:java -Dexec.mainClass=adventofcode.day14.Main2)"'
+      - 'echo "2023.14.2: $(mvn -q exec:java -Dexec.mainClass=adventofcode.day14.Main2)"'

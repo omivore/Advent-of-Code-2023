@@ -1,4 +1,4 @@
-package adventofcode.day13;
+package adventofcode.day14;
 
 import java.io.IOException;
 import java.lang.IllegalArgumentException;
@@ -25,23 +25,7 @@ public class Main2 {
     }
 
     Path inPath = Paths.get(args[0]);
-    List<String> lines = new ArrayList<String>();
-    int total = 0;
-
-    try (Stream<String> stream = Files.lines(inPath)) {
-        Iterator<String> it = stream.iterator();
-        String line;
-        while (it.hasNext()) {
-            line = it.next();
-            if (line.equals("")) {
-                total += Solver.summarizeSmudges(lines);
-                lines.clear();
-            } else {
-                lines.add(line);
-            }
-        }
-        total += Solver.summarizeSmudges(lines);
-    }
-    System.out.println(total);
+    List<String> lines = Files.readAllLines(inPath, StandardCharsets.UTF_8);
+    System.out.println(Solver.spinTheBottle(lines, 1_000_000_000));
   }
 }
