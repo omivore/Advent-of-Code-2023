@@ -95,3 +95,41 @@ passesCheck (Check attr comp val _) item =
 
 ratings :: Item -> Integer
 ratings attrs = foldl (+) 0 (map snd attrs)
+
+-- Part 2 Starts Here
+data Range = Range Integer Integer deriving Show
+type Items = [(String, Range)]
+
+getAllAccepted :: [(String, Gate)] -> Result -> Items -> [Items]
+getAllAccepted _ (Judgement True) items = [items]
+getAllAccepted _ (Judgement False) items = []
+getAllAccepted gates (Next current) items =
+    let gate = case lookup current gates of
+                 Just search -> search
+                 Nothing -> error "gate not found"
+        results = evaluateGateWithRange gate items
+    in concatMap (uncurry (getAllAccepted gates)) results
+
+evaluateGateWithRange :: Gate -> Items -> [(Result, Items)]
+evaluateGateWithRange (Gate [] defaultResult) items = [(defaultResult, items)]
+evaluateGateWithRange (Gate (check@(Check _ _ _ res):checks) defaultResult) items =
+    let (passed, failed) = splitOnTest check items
+    in (res, passed):(evaluateGateWithRange (Gate checks defaultResult) failed)
+
+splitOnTest :: Check -> Items -> (Items, Items)
+splitOnTest (Check attr comp val res) items =
+    let (Range bottom top) = case lookup attr items of
+                     Just search -> search
+                     Nothing -> error "attr not found on item"
+        (passRange, failRange) = case comp of
+            Less lessThan -> ((Range bottom val), (Range val top))
+            More moreThan -> ((Range (val + 1) top), (Range bottom (val + 1)))
+        otherAttrs = filter (\range -> (fst range) /= attr) items
+    in ((attr, passRange):otherAttrs, (attr, failRange):otherAttrs)
+
+scoreAccepted :: [Items] -> Integer
+scoreAccepted [] = 0
+scoreAccepted (item:items) =
+    let possibilities = map (\(Range bot top) -> top - bot) (snd $ unzip item)
+        score = foldl (*) 1 possibilities
+    in score + (scoreAccepted items)

@@ -9,4 +9,4 @@ tasks:
       - cabal test
   solve:
     cmds:
-      - 'echo -e "2022.4:\n$(cabal run -v0 day19)"'
+      - 'echo -e "2022.19:\n$(cabal run -v0 day19)"'

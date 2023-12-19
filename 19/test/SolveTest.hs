@@ -3,7 +3,7 @@ module Main (main) where
 import Test.HUnit
 import Test.Framework
 import Test.Framework.Providers.HUnit
-import Solve (parseAll, testItem, Check(..), Gate(..), Result(..), Comparator(..))
+import Solve (parseAll, testItem, scoreAccepted, getAllAccepted, Check(..), Gate(..), Result(..), Comparator(..), Range(..))
 
 main :: IO ()
 main = defaultMain $ hUnitTestToTests $ TestList [
@@ -164,5 +164,74 @@ main = defaultMain $ hUnitTestToTests $ TestList [
       , ([("x", 2127), ("m", 1623), ("a", 2188), ("s", 1013)], True)
       ]
     let actual = testItem gates (Next "in") dt
+    return $ expected ~=? actual
+  ,
+  "possibilities are deduced" ~: do
+    let dt = [ ( "px"
+               , (Gate [ (Check "a" (Less (<)) 2006 (Next "qkq"))
+                       , (Check "m" (More (>)) 2090 (Judgement True))
+                       ] (Next "rfg")
+                 )
+               )
+             , ( "pv"
+               , (Gate [ (Check "a" (More (>)) 1716 (Judgement False))
+                       ] (Judgement True)
+                 )
+               ),
+               ( "lnx"
+               , (Gate [ (Check "m" (More (>)) 1548 (Judgement True))
+                       ] (Judgement True)
+                 )
+               )
+             , ( "rfg"
+               , (Gate [ (Check "s" (Less (<)) 537 (Next "gd"))
+                       , (Check "x" (More (>)) 2440 (Judgement False))
+                       ] (Judgement True)
+                 )
+               )
+             , ( "qs"
+               , (Gate [ (Check "s" (More (>)) 3448 (Judgement True))
+                       ] (Next "lnx")
+                 )
+               )
+             , ( "qkq"
+               , (Gate [ (Check "x" (Less (<)) 1416 (Judgement True))
+                       ] (Next "crn")
+                 )
+               )
+             , ( "crn"
+               , (Gate [ (Check "x" (More (>)) 2662 (Judgement True))
+                       ] (Judgement False)
+                 )
+               )
+             , ( "in"
+               , (Gate [ (Check "s" (Less (<)) 1351 (Next "px"))
+                       ] (Next "qqz")
+                 )
+               )
+             , ( "qqz"
+               , (Gate [ (Check "s" (More (>)) 2770 (Next "qs"))
+                       , (Check "m" (Less (<)) 1801 (Next "hdj"))
+                       ] (Judgement False)
+                 )
+               )
+             , ( "gd"
+               , (Gate [ (Check "a" (More (>)) 3333 (Judgement False))
+                       ] (Judgement False)
+                 )
+               )
+             , ( "hdj"
+               , (Gate [ (Check "m" (More (>)) 838 (Judgement True))
+                       ] (Next "pv")
+                 )
+               )
+             ]
+    let initial = [ ("x", Range 1 4001)
+                  , ("m", Range 1 4001)
+                  , ("a", Range 1 4001)
+                  , ("s", Range 1 4001)
+                  ]
+    actual <- [scoreAccepted $ (getAllAccepted dt (Next "in") initial)]
+    expected <- [167409079868000]
     return $ expected ~=? actual
   ]
