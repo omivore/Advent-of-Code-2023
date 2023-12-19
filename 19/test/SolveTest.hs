@@ -8,24 +8,25 @@ import Solve (parseAll, testItem, Check(..), Gate(..), Result(..), Comparator(..
 main :: IO ()
 main = defaultMain $ hUnitTestToTests $ TestList [
   "input strings parsed correctly into gates and items" ~: do
-    let dt = unlines [ "px{aLess (<)2006:qkq,mMore (>)2090:A,rfg}"
-                     , "pv{aMore (>)1716:R,A}"
-                     , "lnx{mMore (>)1548:A,A}"
-                     , "rfg{sLess (<)537:gd,xMore (>)2440:R,A}"
-                     , "qs{sMore (>)3448:A,lnx}"
-                     , "qkq{xLess (<)1416:A,crn}"
-                     , "crn{xMore (>)2662:A,R}"
-                     , "in{sLess (<)1351:px,qqz}"
-                     , "qqz{sMore (>)2770:qs,mLess (<)1801:hdj,R}"
-                     , "gd{aMore (>)3333:R,R}"
-                     , "hdj{mMore (>)838:A,pv}"
-                     , ""
-                     , "{x=787,m=2655,a=1222,s=2876}"
-                     , "{x=1679,m=44,a=2067,s=496}"
-                     , "{x=2036,m=264,a=79,s=2244}"
-                     , "{x=2461,m=1339,a=466,s=291}"
-                     , "{x=2127,m=1623,a=2188,s=1013}"
-                     ]
+    dt <- [ unlines [ "px{a<2006:qkq,m>2090:A,rfg}"
+                    , "pv{a>1716:R,A}"
+                    , "lnx{m>1548:A,A}"
+                    , "rfg{s<537:gd,x>2440:R,A}"
+                    , "qs{s>3448:A,lnx}"
+                    , "qkq{x<1416:A,crn}"
+                    , "crn{x>2662:A,R}"
+                    , "in{s<1351:px,qqz}"
+                    , "qqz{s>2770:qs,m<1801:hdj,R}"
+                    , "gd{a>3333:R,R}"
+                    , "hdj{m>838:A,pv}"
+                    , ""
+                    , "{x=787,m=2655,a=1222,s=2876}"
+                    , "{x=1679,m=44,a=2067,s=496}"
+                    , "{x=2036,m=264,a=79,s=2244}"
+                    , "{x=2461,m=1339,a=466,s=291}"
+                    , "{x=2127,m=1623,a=2188,s=1013}"
+                    ]
+          ]
     let expectedGates = [ ( "px"
                           , (Gate [ (Check "a" (Less (<)) 2006 (Next "qkq"))
                                   , (Check "m" (More (>)) 2090 (Judgement True))
@@ -91,7 +92,7 @@ main = defaultMain $ hUnitTestToTests $ TestList [
                         , [("x", 2461), ("m", 1339), ("a", 466), ("s", 291)]
                         , [("x", 2127), ("m", 1623), ("a", 2188), ("s", 1013)]
                         ]
-    let expected = (expectedGates, expectedItems)
+    expected <- [(expectedGates, expectedItems)]
     let actual = parseAll dt
     return $ expected ~=? actual
   ,
