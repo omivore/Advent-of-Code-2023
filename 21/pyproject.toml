@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "day21"
+version = "0.1.0"
+description = ""
+authors = ["Jason Tan <j.tan@obscuritylabs.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.6"
+pytest = "^7.4.3"
+mypy = "^1.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
