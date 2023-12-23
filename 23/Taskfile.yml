@@ -20,5 +20,5 @@ tasks:
   solve:
     deps: [build]
     cmds:
-      - 'echo "2022.6.1: $(poetry run python3 solve/solve.py input)"'
-        #- 'echo "2022.6.2: $(poetry run python3 solve/solve.py input 14)"'
+      - 'echo "2022.23.1: $(poetry run python3 solve/solve.py input)"'
+      - 'echo "2022.23.2: $(poetry run python3 solve/solve.py --climb input)"'
