@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - hlint .
+  test:
+    cmds:
+      - cabal test
+  solve:
+    cmds:
+      - 'echo -e "2022.18:\n$(cabal run -v0 day18)"'
