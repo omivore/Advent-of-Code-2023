@@ -1,0 +1,24 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - poetry install
+  lint:
+    deps: [build]
+    cmds:
+      - poetry run ruff check solve tests
+      - poetry run mypy .
+  style:
+    deps: [build]
+    cmds:
+      - poetry run ruff format solve tests
+  test:
+    deps: [build]
+    cmds:
+      - poetry run pytest
+  solve:
+    deps: [build]
+    cmds:
+      - 'echo "2022.24.1: $(poetry run python3 solve/solve.py input)"'
+      #- 'echo "2022.24.2: $(poetry run python3 solve/solve.py --climb input)"'
